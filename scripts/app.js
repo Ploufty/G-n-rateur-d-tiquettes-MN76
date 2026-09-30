@@ -49,11 +49,10 @@
     hideMenuBtn: $('#hideMenuBtn'),
     settingsBtn: $('#settingsBtn'),
     settingsDialog: $('#settingsDialog'),
-    fontHelpDialog: $('#fontHelpDialog'),
-    fontHelpText: $('#fontHelpText'),
     textInput: $('#textInput'),
     splitMode: $('#splitMode'),
     fontSelect: $('#fontSelect'),
+    customFontInput: $('#customFontInput'),
     fontSizeInput: $('#fontSizeInput'),
     fontSizeValue: $('#fontSizeValue'),
     boldInput: $('#boldInput'),
@@ -95,6 +94,7 @@
     $$('.preset-columns').forEach((btn) => btn.addEventListener('click', () => applyColumnPreset(btn.dataset.preset)));
     $('#addColumnBtn').addEventListener('click', addCustomColumn);
     $('#clearColumnsBtn').addEventListener('click', () => {
+      if (!window.confirm('Supprimer toutes les colonnes ?')) return;
       state.columns = [];
       renderColumns();
       saveAutosave();
@@ -106,6 +106,7 @@
     $('#saveBtn').addEventListener('click', () => saveActivity(state.currentFileName || 'activite-etiquettes.etiq'));
     $('#saveAsBtn').addEventListener('click', () => saveActivity('activite-etiquettes.etiq'));
     $('#clearLabelsBtn').addEventListener('click', () => {
+      if (!window.confirm('Supprimer toutes les étiquettes ?')) return;
       state.labels = [];
       renderLabels();
       saveAutosave();
@@ -229,7 +230,7 @@
   }
 
   function getChosenFont() {
-    return els.fontSelect.value || 'Arial';
+    return els.customFontInput.value.trim() || els.fontSelect.value || 'Arial';
   }
 
   function createTextLabels(shuffle = false) {
@@ -487,6 +488,7 @@
     });
 
     handle.addEventListener('pointermove', (event) => {
+      event.stopPropagation();
       if (!node.classList.contains('dragging')) return;
       event.preventDefault();
       const dx = event.clientX - startX;
@@ -499,6 +501,7 @@
     });
 
     const endResize = (event) => {
+      event.stopPropagation();
       if (!node.classList.contains('dragging')) return;
       handle.releasePointerCapture?.(event.pointerId);
       node.classList.remove('dragging');
@@ -586,10 +589,12 @@
     state.columns.forEach((column, index) => {
       const item = document.createElement('div');
       item.className = 'column-list-item';
-      item.innerHTML = `
-        <span class="column-color-dot" style="background:${column.color}"></span>
-        <strong>${escapeHtml(column.title)}</strong>
-      `;
+      const dot = document.createElement('span');
+      dot.className = 'column-color-dot';
+      dot.style.background = column.color;
+      const name = document.createElement('strong');
+      name.textContent = column.title;
+      item.append(dot, name);
       const editBtn = document.createElement('button');
       editBtn.className = 'mini-button';
       editBtn.textContent = 'Modifier';
@@ -616,12 +621,6 @@
     current.color = state.styles.columnColor || current.color;
     renderColumns();
     saveAutosave();
-  }
-
-  function escapeHtml(value) {
-    return String(value).replace(/[&<>'"]/g, (char) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;'
-    }[char]));
   }
 
   function setMenuVisible(visible) {
@@ -651,11 +650,6 @@
     state.settings.menuVisible = true;
     applySettings();
     saveAutosave();
-  }
-
-  async function showFontHelp() {
-    // L’aide détaillée sur les polices est intégrée dans l’onglet Aide et dans le README.
-    openTab('help');
   }
 
   function newActivity() {
@@ -690,7 +684,7 @@
     document.body.appendChild(link);
     link.click();
     link.remove();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
     state.currentFileName = safeName;
   }
 
@@ -700,6 +694,7 @@
     try {
       const text = await file.text();
       const data = JSON.parse(text);
+      if (!data || typeof data !== 'object') throw new Error('Format invalide');
       loadState(data);
       state.currentFileName = file.name.endsWith('.etiq') ? file.name : `${file.name}.etiq`;
       renderAll();
@@ -713,18 +708,27 @@
   }
 
   function loadState(data) {
-    state.labels = Array.isArray(data.labels) ? data.labels : [];
-    state.columns = Array.isArray(data.columns) ? data.columns : [];
+    const isObject = (item) => item && typeof item === 'object';
+    state.labels = (Array.isArray(data.labels) ? data.labels : []).filter((label) =>
+      isObject(label) && Number.isFinite(label.x) && Number.isFinite(label.y) &&
+      (label.type === 'image' ? typeof label.src === 'string' : typeof label.text === 'string'));
+    state.columns = (Array.isArray(data.columns) ? data.columns : []).filter(isObject);
     state.settings = { ...state.settings, ...(data.settings || {}) };
     state.styles = { ...state.styles, ...(data.styles || {}) };
     state.nextId = Number(data.nextId) || state.labels.length + 1;
   }
 
+  let autosaveWarningShown = false;
+
   function saveAutosave() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState()));
+      autosaveWarningShown = false;
     } catch (error) {
       // Certaines grosses activités avec beaucoup d’images peuvent dépasser le quota localStorage.
+      if (autosaveWarningShown) return;
+      autosaveWarningShown = true;
+      alert('La sauvegarde automatique a échoué (activité trop volumineuse, sans doute à cause des images). Pensez à enregistrer l’activité en .etiq pour ne rien perdre.');
     }
   }
 
@@ -733,7 +737,7 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const data = JSON.parse(raw);
-      loadState(data);
+      if (data && typeof data === 'object') loadState(data);
     } catch (error) {
       localStorage.removeItem(STORAGE_KEY);
     }
