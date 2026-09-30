@@ -1,21 +1,21 @@
 @font-face {
   font-family: "Marelle 2";
-  src: url("../assets/fonts/Marelle2-Regular.ttf") format("truetype"),
-       local("Marelle 2"), local("Marelle2-Regular"), local("Marelle 2 Regular");
+  src: local("Marelle 2"), local("Marelle2-Regular"), local("Marelle 2 Regular"),
+       url("../assets/fonts/Marelle2-Regular.ttf") format("truetype");
   font-display: swap;
 }
 
 @font-face {
   font-family: "Marelle Baton 2";
-  src: url("../assets/fonts/MarelleBaton2-Regular.ttf") format("truetype"),
-       local("Marelle Baton 2"), local("MarelleBaton2-Regular"), local("Marelle Baton 2 Regular");
+  src: local("Marelle Baton 2"), local("MarelleBaton2-Regular"), local("Marelle Baton 2 Regular"),
+       url("../assets/fonts/MarelleBaton2-Regular.ttf") format("truetype");
   font-display: swap;
 }
 
 @font-face {
   font-family: "OpenDyslexic";
-  src: url("../assets/fonts/OpenDyslexic-Regular.otf") format("opentype"),
-       local("OpenDyslexic"), local("OpenDyslexic-Regular"), local("OpenDyslexic Regular");
+  src: local("OpenDyslexic"), local("OpenDyslexic-Regular"), local("OpenDyslexic Regular"),
+       url("../assets/fonts/OpenDyslexic-Regular.otf") format("opentype");
   font-display: swap;
 }
 
