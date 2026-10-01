@@ -115,6 +115,8 @@
 
 html {
   font-size: calc(100% * var(--text-scale));
+  /* Pas de zoom au double appui sur TNI / tablette */
+  touch-action: manipulation;
 }
 
 html, body {
@@ -258,9 +260,9 @@ body.menu-bottom .menu-panel { border-bottom: 0; }
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-width: 40px;
-  height: 40px;
-  padding: 0 10px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--panel);
@@ -274,7 +276,12 @@ body.menu-bottom .menu-panel { border-bottom: 0; }
   border-color: var(--blue);
 }
 
-.i-sun { display: none; }
+.icon-btn[hidden] { display: none; }
+.icon-btn.active { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
+.i-sun,
+.i-compress,
+.icon-btn.active .i-expand { display: none; }
+.icon-btn.active .i-compress { display: block; }
 [data-theme="dark"] .i-sun { display: block; }
 [data-theme="dark"] .i-moon { display: none; }
 
@@ -291,8 +298,9 @@ body.menu-bottom .menu-panel { border-bottom: 0; }
   border-bottom: 3px solid transparent;
   background: transparent;
   color: var(--text);
-  padding: 8px 12px;
-  font-size: .9rem;
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: .95rem;
   font-weight: 700;
   white-space: nowrap;
   border-radius: 8px 8px 0 0;
@@ -402,6 +410,8 @@ body.menu-right .tab-panel.active { grid-template-columns: 1fr; }
   border: 0;
   background: transparent;
   accent-color: var(--blue);
+  height: 32px;
+  cursor: pointer;
 }
 
 .font-status {
@@ -421,8 +431,8 @@ body.menu-right .tab-panel.active { grid-template-columns: 1fr; }
   margin: 8px 0 10px;
   font-size: .85rem;
 }
-.toggle-row label { display: flex; align-items: center; gap: 6px; }
-.toggle-row input { accent-color: var(--blue); width: 1.05rem; height: 1.05rem; }
+.toggle-row label { display: flex; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; }
+.toggle-row input { accent-color: var(--blue); width: 22px; height: 22px; margin: 0; }
 
 .settings-card { position: relative; }
 #tab-text .settings-card {
@@ -451,9 +461,9 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 28px;
-  width: 28px;
-  height: 28px;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   border-radius: 50%;
   border: 1px solid var(--blue);
@@ -487,7 +497,7 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 42px;
+  min-height: 44px;
   padding: 8px 16px;
   border: 1px solid var(--blue);
   border-radius: 8px;
@@ -515,14 +525,16 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
 }
 .btn-dice:hover { background: var(--blue-soft); }
 .wide { width: 100%; }
+.clear-columns { margin-top: 10px; }
 
 .mini-button {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel-2);
   color: var(--blue);
-  padding: 5px 9px;
-  font-size: .75rem;
+  min-height: 36px;
+  padding: 5px 12px;
+  font-size: .8rem;
   font-weight: 700;
 }
 .mini-button:hover { background: var(--blue-soft); border-color: var(--blue); }
@@ -544,8 +556,8 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
   gap: 6px;
 }
 .swatch {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 2px solid rgba(0, 0, 0, .15);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45);
@@ -608,6 +620,8 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+  /* Ni défilement ni zoom au doigt sur le plateau : les gestes servent à déplacer les étiquettes */
+  touch-action: none;
   background:
     radial-gradient(circle at 14px 14px, color-mix(in srgb, var(--blue) 18%, transparent) 1.2px, transparent 1.6px),
     var(--board);
@@ -685,10 +699,10 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
 }
 .resize-handle {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  right: -8px;
-  bottom: -8px;
+  width: 32px;
+  height: 32px;
+  right: -6px;
+  bottom: -6px;
   border-radius: 50%;
   background: var(--blue);
   border: 3px solid #fff;
@@ -729,24 +743,47 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
 }
 .trash-icon { font-size: 34px; }
 
-.floating-menu-button {
+/* Languette du menu : toujours collée au bord du menu (ou au bord de l'écran quand il est masqué) */
+.menu-tab {
   position: absolute;
-  left: 18px;
-  top: 18px;
   z-index: 8;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
-  border: 0;
-  border-radius: 999px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 1px solid var(--blue);
   background: var(--blue);
   color: var(--on-blue);
   font-weight: 700;
+  font-size: .9rem;
+  white-space: nowrap;
   box-shadow: var(--shadow);
+  transition: background .15s ease;
 }
-.floating-menu-button:hover { background: var(--blue-hover); }
-.floating-menu-button[hidden] { display: none; }
+.menu-tab:hover { background: var(--blue-hover); }
+.menu-tab svg { transition: transform .2s ease; }
+
+/* À droite plutôt qu'au centre : ne recouvre pas le titre de la colonne du milieu */
+body.menu-top .menu-tab { top: 0; right: 24px; border-top: 0; border-radius: 0 0 12px 12px; }
+body.menu-bottom .menu-tab { bottom: 0; right: 24px; border-bottom: 0; border-radius: 12px 12px 0 0; }
+body.menu-left .menu-tab { left: 0; top: 50%; transform: translateY(-50%); border-left: 0; border-radius: 0 12px 12px 0; }
+body.menu-right .menu-tab { right: 0; top: 50%; transform: translateY(-50%); border-right: 0; border-radius: 12px 0 0 12px; flex-direction: row-reverse; }
+
+/* La flèche indique le sens du mouvement : vers le menu pour le masquer, vers le plateau pour l'afficher */
+body.menu-top.menu-hidden .menu-tab svg,
+body.menu-bottom:not(.menu-hidden) .menu-tab svg { transform: rotate(180deg); }
+body.menu-left:not(.menu-hidden) .menu-tab svg,
+body.menu-right.menu-hidden .menu-tab svg { transform: rotate(-90deg); }
+body.menu-left.menu-hidden .menu-tab svg,
+body.menu-right:not(.menu-hidden) .menu-tab svg { transform: rotate(90deg); }
+
+/* Menu masqué : la languette se fait plus discrète pour ne pas gêner l'activité */
+body.menu-hidden .menu-tab {
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  color: var(--blue);
+}
+body.menu-hidden .menu-tab:hover { background: var(--blue-soft); }
 
 /* ---------- Paramètres d'affichage ---------- */
 .settings-dialog {
@@ -858,6 +895,15 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
   transform: translateX(20px);
 }
 
+.file-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 1rem;
+}
+.file-name-row input { flex: 1; min-height: 44px; font-size: 1rem; }
+
 .settings-foot {
   display: flex;
   flex-wrap: wrap;
@@ -879,7 +925,7 @@ body.menu-right .brand p { white-space: normal; }
 body.menu-left .btn-label,
 body.menu-right .btn-label { display: none; }
 
-@media (max-width: 980px) {
+@media (max-width: 1180px) {
   .menu-header { grid-template-columns: 1fr auto; }
   .tabs { grid-column: 1 / -1; order: 3; }
   body.menu-top #tab-text.active,

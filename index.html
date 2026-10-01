@@ -36,13 +36,18 @@
           </div>
         </div>
         <nav class="tabs" aria-label="Onglets">
-          <button class="tab-button active" data-tab="home">Accueil</button>
+          <button class="tab-button active" data-tab="home">Activité</button>
           <button class="tab-button" data-tab="text">Texte</button>
           <button class="tab-button" data-tab="images">Images</button>
           <button class="tab-button" data-tab="columns">Colonnes</button>
           <button class="tab-button" data-tab="help">Aide</button>
         </nav>
         <div class="actions">
+          <button type="button" class="icon-btn" id="fullscreenBtn" aria-label="Plein écran" title="Plein écran">
+            <svg class="i-expand" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            <svg class="i-compress" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+            <span class="btn-label">Plein écran</span>
+          </button>
           <button type="button" class="icon-btn" id="themeToggle" aria-label="Activer le mode sombre">
             <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
             <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg>
@@ -50,9 +55,6 @@
           <button type="button" class="icon-btn" id="settingsBtn" aria-haspopup="dialog" aria-controls="settingsDialog">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
             <span class="btn-label">Affichage</span>
-          </button>
-          <button type="button" class="icon-btn" id="hideMenuBtn" aria-label="Masquer le menu" title="Masquer le menu">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
         </div>
       </header>
@@ -64,19 +66,16 @@
             <button id="newBtn" class="btn btn-ghost">Nouveau</button>
             <button id="openBtn" class="btn btn-ghost">Ouvrir .etiq</button>
             <button id="saveBtn" class="btn">Enregistrer</button>
-            <button id="saveAsBtn" class="btn btn-ghost">Enregistrer sous</button>
+            <button id="saveAsBtn" class="btn btn-ghost">Enregistrer sous…</button>
           </div>
           <input type="file" id="openFileInput" accept=".etiq,application/json" hidden>
           <p class="hint">Le fichier <strong>.etiq</strong> conserve les étiquettes, les images, les colonnes et les réglages.</p>
         </div>
 
         <div class="card">
-          <h2>Actions rapides</h2>
-          <div class="button-grid compact">
-            <button id="clearLabelsBtn" class="btn btn-ghost btn-danger">Vider les étiquettes</button>
-            <button id="clearColumnsBtn" class="btn btn-ghost">Vider les colonnes</button>
-            <button id="fullscreenBtn" class="btn btn-ghost">Plein écran</button>
-          </div>
+          <h2>Plateau</h2>
+          <button id="clearLabelsBtn" class="btn btn-ghost btn-danger wide">Supprimer toutes les étiquettes</button>
+          <p class="hint">Pour supprimer une seule étiquette, la glisser dans la corbeille. Les colonnes se gèrent dans l’onglet <strong>Colonnes</strong>.</p>
         </div>
       </section>
 
@@ -152,7 +151,7 @@
           <h2>Étiquettes image</h2>
           <button id="addImagesBtn" class="btn wide">Ajouter image(s)</button>
           <input type="file" id="imageFileInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
-          <p class="hint">La sélection de plusieurs images en une seule fois est possible. Chaque image devient une étiquette manipulable.</p>
+          <p class="hint">La sélection de plusieurs images en une seule fois est possible. Chaque image devient une étiquette manipulable, redimensionnable avec la poignée ronde en bas à droite.</p>
         </div>
         <div class="card">
           <h2>Réglages image</h2>
@@ -168,6 +167,7 @@
             <label><input id="imageBorderInput" type="checkbox" checked> Bordure</label>
             <label><input id="imageRoundedInput" type="checkbox" checked> Coins arrondis</label>
           </div>
+          <p class="hint">La couleur de bordure est celle choisie dans l’onglet <strong>Texte</strong>.</p>
         </div>
       </section>
 
@@ -197,6 +197,7 @@
         <div class="card">
           <h2>Colonnes créées</h2>
           <div id="columnList" class="column-list empty">Aucune colonne pour le moment.</div>
+          <button id="clearColumnsBtn" class="btn btn-ghost btn-danger wide clear-columns">Supprimer toutes les colonnes</button>
         </div>
       </section>
 
@@ -205,42 +206,41 @@
           <h2>Aide rapide</h2>
 
           <p>
-            <strong>Affichage :</strong> le bouton <strong>Affichage</strong> permet de choisir le thème,
-            la taille du texte, les animations, le contraste et la position du menu, ou de tout réinitialiser.
+            <strong>Menu :</strong> la languette <strong>Masquer le menu</strong>, au bord du menu, libère tout le
+            plateau. La même languette, devenue <strong>Menu</strong> au bord de l’écran, permet de le rouvrir.
           </p>
 
           <p>
-            <strong>Onglet Texte :</strong> les mots sont saisis dans l’onglet Texte. Le bouton
-            <strong>Générer les étiquettes</strong> génère ensuite les étiquettes. Plusieurs choix sont
-            disponibles : découpage, police, style, couleurs et forme des étiquettes.
+            <strong>En-tête :</strong> <strong>Plein écran</strong> (conseillé au TNI / VPI), mode clair ou sombre,
+            et <strong>Affichage</strong> pour la taille du texte, le contraste, les animations et la position du menu
+            (haut, bas, gauche ou droite : au TNI, le bas est plus facile à atteindre pour les élèves).
           </p>
 
           <p>
-            <strong>Déplacement :</strong> une étiquette se déplace avec la souris, le doigt ou le stylet.
+            <strong>Onglet Activité :</strong> nouvelle activité, ouverture et enregistrement au format
+            <strong>.etiq</strong> (étiquettes, images, colonnes et position du menu), suppression de toutes les étiquettes.
           </p>
 
           <p>
-            <strong>Suppression :</strong> une étiquette déposée dans la corbeille, en bas à gauche,
-            est supprimée. Il est aussi possible de vider l’ensemble des étiquettes depuis l’onglet
-            <strong>Accueil</strong>.
+            <strong>Onglet Texte :</strong> les mots saisis (ou importés depuis un fichier .txt) deviennent des
+            étiquettes avec <strong>Générer les étiquettes</strong>, dans l’ordre ou dans le désordre. Découpage, police,
+            taille, style et couleurs se règlent à droite.
           </p>
 
           <p>
-            <strong>Onglet Images :</strong> l’onglet Images permet d’ajouter une ou plusieurs images
-            en une seule sélection. Les images générées peuvent être redimensionnées à l’aide de la
-            poignée située dans l’angle inférieur droit de l’étiquette.
+            <strong>Onglet Images :</strong> une ou plusieurs images en une seule sélection. Une image se redimensionne
+            avec la poignée ronde en bas à droite.
           </p>
 
           <p>
-            <strong>Onglet Colonnes :</strong> pour les tâches de tri ou de catégorisation, des colonnes
-            peuvent être générées en fond. Elles sont personnalisables, peuvent être supprimées
-            individuellement, ou toutes supprimées depuis l’onglet <strong>Accueil</strong> avec
-            <strong>Vider les colonnes</strong>.
+            <strong>Onglet Colonnes :</strong> colonnes de tri en fond de plateau, modèles rapides ou personnalisées,
+            modifiables et supprimables.
           </p>
 
           <p>
-            <strong>Sauvegarde :</strong> l’onglet Accueil permet d’enregistrer ou d’ouvrir une activité
-            au format <strong>.etiq</strong>.
+            <strong>Déplacer / supprimer :</strong> une étiquette se déplace à la souris, au doigt ou au stylet
+            (plusieurs élèves peuvent déplacer des étiquettes en même temps). Déposée dans la corbeille, en bas
+            à gauche, elle est supprimée.
           </p>
         </div>
 
@@ -262,6 +262,14 @@
               </p>
 
               <p>
+                Licences des polices intégrées :
+                <a href="assets/fonts/Marelle-LICENSE.txt" target="_blank" rel="noopener">Marelle 2 et Marelle Baton 2</a>,
+                <a href="assets/fonts/OpenDyslexic-LICENSE.txt" target="_blank" rel="noopener">OpenDyslexic</a>
+                (texte officiel de la licence :
+                <a href="https://openfontlicense.org" target="_blank" rel="noopener">SIL Open Font License 1.1</a>).
+              </p>
+
+              <p>
                 Century Gothic et Comic Sans MS dépendent des polices installées sur l’ordinateur. Sous la liste des
                 polices, un message indique si la police choisie est disponible ; sinon, Arial est utilisée.
               </p>
@@ -278,12 +286,29 @@
         <span class="trash-icon">🗑</span>
         <span>Corbeille</span>
       </div>
-      <button type="button" id="showMenuBtn" class="floating-menu-button" hidden title="Afficher le menu" aria-label="Afficher le menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-        <span>Menu</span>
+      <button type="button" id="menuToggle" class="menu-tab" aria-controls="menuPanel" aria-expanded="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+        <span class="menu-tab-text">Masquer le menu</span>
       </button>
     </main>
   </div>
+
+  <dialog id="saveAsDialog" class="settings-dialog" aria-labelledby="saveAsTitle">
+    <form method="dialog" class="settings">
+      <div class="settings-head">
+        <h2 id="saveAsTitle">Enregistrer sous</h2>
+        <button type="submit" class="icon-btn" value="cancel" formnovalidate aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <label class="field">
+        Nom du fichier
+        <span class="file-name-row"><input id="saveAsName" type="text" required autocomplete="off"><span>.etiq</span></span>
+      </label>
+      <div class="settings-foot">
+        <button type="submit" class="btn btn-ghost" value="cancel" formnovalidate>Annuler</button>
+        <button type="submit" class="btn" value="save">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsTitle">
     <form method="dialog" class="settings">
@@ -332,7 +357,6 @@
       </fieldset>
 
       <div class="settings-foot">
-        <button type="button" class="btn btn-ghost" id="settingsHideMenuBtn">Masquer le menu</button>
         <button type="button" class="btn btn-ghost" id="resetUiBtn">Réinitialiser</button>
         <button type="submit" class="btn" value="close">Fermer</button>
       </div>

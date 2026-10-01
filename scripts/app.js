@@ -56,11 +56,14 @@
     columnsLayer: $('#columnsLayer'),
     labelsLayer: $('#labelsLayer'),
     trashZone: $('#trashZone'),
-    showMenuBtn: $('#showMenuBtn'),
-    hideMenuBtn: $('#hideMenuBtn'),
+    menuToggle: $('#menuToggle'),
+    menuToggleText: $('#menuToggle .menu-tab-text'),
+    fullscreenBtn: $('#fullscreenBtn'),
     settingsBtn: $('#settingsBtn'),
     settingsDialog: $('#settingsDialog'),
     settingsForm: $('#settingsDialog form'),
+    saveAsDialog: $('#saveAsDialog'),
+    saveAsName: $('#saveAsName'),
     textInput: $('#textInput'),
     splitMode: $('#splitMode'),
     fontSelect: $('#fontSelect'),
@@ -85,6 +88,7 @@
     buildPalettes();
     bindEvents();
     setupInlineTooltips();
+    setupReliableTaps();
     loadAutosave();
     if (els.splitMode) els.splitMode.value = 'word';
     applyPrefs();
@@ -121,19 +125,28 @@
     $('#openBtn').addEventListener('click', () => els.openFileInput.click());
     els.openFileInput.addEventListener('change', handleOpenActivity);
     $('#saveBtn').addEventListener('click', () => saveActivity(state.currentFileName || 'activite-etiquettes.etiq'));
-    $('#saveAsBtn').addEventListener('click', () => saveActivity('activite-etiquettes.etiq'));
+    $('#saveAsBtn').addEventListener('click', () => {
+      els.saveAsName.value = state.currentFileName.replace(/\.etiq$/, '');
+      showDialog(els.saveAsDialog);
+      els.saveAsName.select();
+    });
+    els.saveAsDialog.addEventListener('close', () => {
+      if (els.saveAsDialog.returnValue !== 'save') return;
+      saveActivity(els.saveAsName.value.trim().replace(/[\\/:*?"<>|]/g, '-') || 'activite-etiquettes');
+    });
     $('#clearLabelsBtn').addEventListener('click', () => {
       if (!window.confirm('Supprimer toutes les étiquettes ?')) return;
       state.labels = [];
       renderLabels();
       saveAutosave();
     });
-    $('#fullscreenBtn').addEventListener('click', toggleFullscreen);
+    els.fullscreenBtn.addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    if (!document.fullscreenEnabled) els.fullscreenBtn.hidden = true;
 
-    els.hideMenuBtn.addEventListener('click', () => setMenuVisible(false));
-    els.showMenuBtn.addEventListener('click', () => setMenuVisible(true));
-    $('#settingsHideMenuBtn').addEventListener('click', () => setMenuVisible(false));
-    $('#settingsHideMenuBtn').addEventListener('click', () => els.settingsDialog.close?.());
+    els.menuToggle.addEventListener('click', () => setMenuVisible(!state.settings.menuVisible));
+    // Au TNI, un appui long ouvrirait le menu contextuel du navigateur au lieu de déplacer l'étiquette.
+    els.workspace.addEventListener('contextmenu', (event) => event.preventDefault());
     els.settingsBtn.addEventListener('click', () => {
       syncSettingsForm();
       showDialog(els.settingsDialog);
@@ -202,11 +215,43 @@
     }
 
     document.querySelectorAll('.inline-help').forEach((button) => {
-      button.addEventListener('pointerenter', () => show(button));
-      button.addEventListener('pointerleave', hide);
-      button.addEventListener('focus', () => show(button));
+      button.addEventListener('pointerenter', (event) => { if (event.pointerType === 'mouse') show(button); });
+      button.addEventListener('pointerleave', (event) => { if (event.pointerType === 'mouse') hide(); });
+      // Au doigt ou au stylet, la bulle s'ouvre et se ferme d'un appui.
+      button.addEventListener('click', () => (tooltip.classList.contains('visible') ? hide() : show(button)));
       button.addEventListener('blur', hide);
     });
+    document.addEventListener('pointerdown', (event) => {
+      if (!event.target.closest('.inline-help')) hide();
+    });
+  }
+
+  // Au doigt ou au stylet (TNI / VPI), Chromium perd parfois le « clic » de l'appui qui suit le
+  // glissement d'une étiquette : le bouton semble ne pas répondre. Si un appui net sur un bouton
+  // n'est pas suivi d'un clic, on le déclenche nous-mêmes (jamais deux fois).
+  function setupReliableTaps() {
+    const TAPPABLE = 'button, summary, a[href], .seg label, .switch, .toggle-row label';
+    let tap = null;
+
+    document.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' || !event.isPrimary) return;
+      const target = event.target.closest(TAPPABLE);
+      tap = target && !target.closest('.label-item') ? { target, x: event.clientX, y: event.clientY } : null;
+    }, true);
+
+    document.addEventListener('pointerup', (event) => {
+      if (!tap || event.pointerType === 'mouse') return;
+      const { target, x, y } = tap;
+      tap = null;
+      if (event.target.closest(TAPPABLE) !== target || Math.hypot(event.clientX - x, event.clientY - y) > 12) return;
+      let clicked = false;
+      const onClick = () => { clicked = true; };
+      document.addEventListener('click', onClick, { capture: true, once: true });
+      setTimeout(() => {
+        document.removeEventListener('click', onClick, true);
+        if (!clicked && target.isConnected) target.click();
+      }, 350);
+    }, true);
   }
 
   function openTab(name) {
@@ -691,7 +736,18 @@
     ['top', 'bottom', 'left', 'right'].forEach((pos) => els.body.classList.remove(`menu-${pos}`));
     els.body.classList.add(`menu-${state.settings.menuPosition || 'top'}`);
     els.body.classList.toggle('menu-hidden', !state.settings.menuVisible);
-    els.showMenuBtn.hidden = state.settings.menuVisible;
+    els.menuToggle.setAttribute('aria-expanded', String(state.settings.menuVisible));
+    els.menuToggleText.textContent = state.settings.menuVisible ? 'Masquer le menu' : 'Menu';
+    els.menuToggle.setAttribute('aria-label', state.settings.menuVisible ? 'Masquer le menu' : 'Afficher le menu');
+  }
+
+  function updateFullscreenButton() {
+    const active = Boolean(document.fullscreenElement);
+    els.fullscreenBtn.classList.toggle('active', active);
+    const label = active ? 'Quitter le plein écran' : 'Plein écran';
+    els.fullscreenBtn.setAttribute('aria-label', label);
+    els.fullscreenBtn.title = label;
+    els.fullscreenBtn.querySelector('.btn-label').textContent = label;
   }
 
   function loadPrefs() {
