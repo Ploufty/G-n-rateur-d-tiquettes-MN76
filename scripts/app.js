@@ -11,14 +11,19 @@
   ];
   const COLUMN_PALETTE = ['#dbeafe', '#dcfce7', '#fef3c7', '#fee2e2', '#ede9fe', '#fce7f3', '#e0f2fe', '#f1f5f9'];
 
-  const FONT_STACKS = {
-    'Arial': 'Arial, sans-serif',
-    'Century Gothic': '"Century Gothic", Arial, sans-serif',
-    'Marelle 2': '"Marelle 2", "Marelle2-Regular", Arial, sans-serif',
-    'Marelle Baton 2': '"Marelle Baton 2", "MarelleBaton2-Regular", Arial, sans-serif',
-    'OpenDyslexic': '"OpenDyslexic", "OpenDyslexic-Regular", Arial, sans-serif',
-    'Comic Sans MS': '"Comic Sans MS", Arial, sans-serif'
+  // Polices installées d'abord, puis les polices « Etiq … » du dossier assets/fonts (voir style.css).
+  const FONT_FAMILIES = {
+    'Arial': ['Arial'],
+    'Century Gothic': ['Century Gothic', 'CenturyGothic'],
+    'Marelle 2': ['Marelle 2', 'Marelle2', 'Marelle', 'Etiq Marelle 2'],
+    'Marelle Baton 2': ['Marelle Bâton 2', 'Marelle Baton 2', 'MarelleBaton2', 'Etiq Marelle Baton 2'],
+    'OpenDyslexic': ['OpenDyslexic', 'OpenDyslexic3', 'Open Dyslexic', 'Etiq OpenDyslexic'],
+    'Comic Sans MS': ['Comic Sans MS', 'Comic Sans']
   };
+  const FONT_STACKS = Object.fromEntries(Object.entries(FONT_FAMILIES).map(([name, families]) => [
+    name,
+    `${families.map((family) => `"${family}"`).join(', ')}, Arial, sans-serif`
+  ]));
 
   const state = {
     labels: [],
@@ -51,15 +56,19 @@
     columnsLayer: $('#columnsLayer'),
     labelsLayer: $('#labelsLayer'),
     trashZone: $('#trashZone'),
-    showMenuBtn: $('#showMenuBtn'),
-    hideMenuBtn: $('#hideMenuBtn'),
+    menuToggle: $('#menuToggle'),
+    menuToggleText: $('#menuToggle .menu-tab-text'),
+    fullscreenBtn: $('#fullscreenBtn'),
     settingsBtn: $('#settingsBtn'),
     settingsDialog: $('#settingsDialog'),
     settingsForm: $('#settingsDialog form'),
+    saveAsDialog: $('#saveAsDialog'),
+    saveAsName: $('#saveAsName'),
     textInput: $('#textInput'),
     splitMode: $('#splitMode'),
     fontSelect: $('#fontSelect'),
     customFontInput: $('#customFontInput'),
+    fontStatus: $('#fontStatus'),
     fontSizeInput: $('#fontSizeInput'),
     fontSizeValue: $('#fontSizeValue'),
     boldInput: $('#boldInput'),
@@ -79,12 +88,14 @@
     buildPalettes();
     bindEvents();
     setupInlineTooltips();
+    setupReliableTaps();
     loadAutosave();
     if (els.splitMode) els.splitMode.value = 'word';
     applyPrefs();
     applySettings();
     renderAll();
     updateFontSizeLabel();
+    updateFontStatus();
   }
 
   function bindEvents() {
@@ -95,6 +106,8 @@
     $('#loadTxtBtn').addEventListener('click', () => els.txtFileInput.click());
     els.txtFileInput.addEventListener('change', handleTxtFile);
     els.fontSizeInput.addEventListener('input', updateFontSizeLabel);
+    els.fontSelect.addEventListener('change', updateFontStatus);
+    els.customFontInput.addEventListener('input', debounce(updateFontStatus, 300));
 
     $('#addImagesBtn').addEventListener('click', () => els.imageFileInput.click());
     els.imageFileInput.addEventListener('change', handleImageFiles);
@@ -112,19 +125,28 @@
     $('#openBtn').addEventListener('click', () => els.openFileInput.click());
     els.openFileInput.addEventListener('change', handleOpenActivity);
     $('#saveBtn').addEventListener('click', () => saveActivity(state.currentFileName || 'activite-etiquettes.etiq'));
-    $('#saveAsBtn').addEventListener('click', () => saveActivity('activite-etiquettes.etiq'));
+    $('#saveAsBtn').addEventListener('click', () => {
+      els.saveAsName.value = state.currentFileName.replace(/\.etiq$/, '');
+      showDialog(els.saveAsDialog);
+      els.saveAsName.select();
+    });
+    els.saveAsDialog.addEventListener('close', () => {
+      if (els.saveAsDialog.returnValue !== 'save') return;
+      saveActivity(els.saveAsName.value.trim().replace(/[\\/:*?"<>|]/g, '-') || 'activite-etiquettes');
+    });
     $('#clearLabelsBtn').addEventListener('click', () => {
       if (!window.confirm('Supprimer toutes les étiquettes ?')) return;
       state.labels = [];
       renderLabels();
       saveAutosave();
     });
-    $('#fullscreenBtn').addEventListener('click', toggleFullscreen);
+    els.fullscreenBtn.addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    if (!document.fullscreenEnabled) els.fullscreenBtn.hidden = true;
 
-    els.hideMenuBtn.addEventListener('click', () => setMenuVisible(false));
-    els.showMenuBtn.addEventListener('click', () => setMenuVisible(true));
-    $('#settingsHideMenuBtn').addEventListener('click', () => setMenuVisible(false));
-    $('#settingsHideMenuBtn').addEventListener('click', () => els.settingsDialog.close?.());
+    els.menuToggle.addEventListener('click', () => setMenuVisible(!state.settings.menuVisible));
+    // Au TNI, un appui long ouvrirait le menu contextuel du navigateur au lieu de déplacer l'étiquette.
+    els.workspace.addEventListener('contextmenu', (event) => event.preventDefault());
     els.settingsBtn.addEventListener('click', () => {
       syncSettingsForm();
       showDialog(els.settingsDialog);
@@ -193,11 +215,43 @@
     }
 
     document.querySelectorAll('.inline-help').forEach((button) => {
-      button.addEventListener('pointerenter', () => show(button));
-      button.addEventListener('pointerleave', hide);
-      button.addEventListener('focus', () => show(button));
+      button.addEventListener('pointerenter', (event) => { if (event.pointerType === 'mouse') show(button); });
+      button.addEventListener('pointerleave', (event) => { if (event.pointerType === 'mouse') hide(); });
+      // Au doigt ou au stylet, la bulle s'ouvre et se ferme d'un appui.
+      button.addEventListener('click', () => (tooltip.classList.contains('visible') ? hide() : show(button)));
       button.addEventListener('blur', hide);
     });
+    document.addEventListener('pointerdown', (event) => {
+      if (!event.target.closest('.inline-help')) hide();
+    });
+  }
+
+  // Au doigt ou au stylet (TNI / VPI), Chromium perd parfois le « clic » de l'appui qui suit le
+  // glissement d'une étiquette : le bouton semble ne pas répondre. Si un appui net sur un bouton
+  // n'est pas suivi d'un clic, on le déclenche nous-mêmes (jamais deux fois).
+  function setupReliableTaps() {
+    const TAPPABLE = 'button, summary, a[href], .seg label, .switch, .toggle-row label';
+    let tap = null;
+
+    document.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' || !event.isPrimary) return;
+      const target = event.target.closest(TAPPABLE);
+      tap = target && !target.closest('.label-item') ? { target, x: event.clientX, y: event.clientY } : null;
+    }, true);
+
+    document.addEventListener('pointerup', (event) => {
+      if (!tap || event.pointerType === 'mouse') return;
+      const { target, x, y } = tap;
+      tap = null;
+      if (event.target.closest(TAPPABLE) !== target || Math.hypot(event.clientX - x, event.clientY - y) > 12) return;
+      let clicked = false;
+      const onClick = () => { clicked = true; };
+      document.addEventListener('click', onClick, { capture: true, once: true });
+      setTimeout(() => {
+        document.removeEventListener('click', onClick, true);
+        if (!clicked && target.isConnected) target.click();
+      }, 350);
+    }, true);
   }
 
   function openTab(name) {
@@ -252,6 +306,35 @@
 
   function getChosenFont() {
     return els.customFontInput.value.trim() || els.fontSelect.value || 'Arial';
+  }
+
+  // Vérifie qu'au moins une des familles de la police choisie est réellement utilisable.
+  async function isFontAvailable(font) {
+    const families = FONT_FAMILIES[font] || [font.replace(/["']/g, '').trim()];
+    const ctx = document.createElement('canvas').getContext('2d');
+    const sample = 'mmmwwwiiilll Le chat dort 0123';
+    const width = (family) => {
+      ctx.font = `40px ${family}`;
+      return ctx.measureText(sample).width;
+    };
+    for (const family of families) {
+      await document.fonts.load(`40px "${family}"`).catch(() => {});
+      if (['monospace', 'serif'].some((generic) => width(`"${family}", ${generic}`) !== width(generic))) return true;
+    }
+    return false;
+  }
+
+  let fontStatusRequest = 0;
+
+  async function updateFontStatus() {
+    const font = getChosenFont();
+    const request = ++fontStatusRequest;
+    const available = await isFontAvailable(font);
+    if (request !== fontStatusRequest) return;
+    els.fontStatus.className = `font-status ${available ? 'ok' : 'missing'}`;
+    els.fontStatus.textContent = available
+      ? `✓ Police « ${font} » disponible`
+      : `Police « ${font} » introuvable : Arial sera utilisée. Voir l'onglet Aide pour l'installer.`;
   }
 
   function createTextLabels(shuffle = false) {
@@ -653,7 +736,18 @@
     ['top', 'bottom', 'left', 'right'].forEach((pos) => els.body.classList.remove(`menu-${pos}`));
     els.body.classList.add(`menu-${state.settings.menuPosition || 'top'}`);
     els.body.classList.toggle('menu-hidden', !state.settings.menuVisible);
-    els.showMenuBtn.hidden = state.settings.menuVisible;
+    els.menuToggle.setAttribute('aria-expanded', String(state.settings.menuVisible));
+    els.menuToggleText.textContent = state.settings.menuVisible ? 'Masquer le menu' : 'Menu';
+    els.menuToggle.setAttribute('aria-label', state.settings.menuVisible ? 'Masquer le menu' : 'Afficher le menu');
+  }
+
+  function updateFullscreenButton() {
+    const active = Boolean(document.fullscreenElement);
+    els.fullscreenBtn.classList.toggle('active', active);
+    const label = active ? 'Quitter le plein écran' : 'Plein écran';
+    els.fullscreenBtn.setAttribute('aria-label', label);
+    els.fullscreenBtn.title = label;
+    els.fullscreenBtn.querySelector('.btn-label').textContent = label;
   }
 
   function loadPrefs() {

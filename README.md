@@ -13,8 +13,9 @@ Application web statique pour créer et manipuler des étiquettes texte ou image
 - Suppression par glisser-déposer dans la corbeille.
 - Colonnes rapides : 2, 3, 4, Oui / Non, Vrai / Faux.
 - Colonnes personnalisées.
-- Menu affichable / masquable.
-- Position du menu : haut, bas, gauche, droite.
+- Menu masquable d’un appui sur sa languette ; position haut, bas, gauche ou droite.
+- Plein écran en un appui.
+- Adapté au TNI / VPI : grandes cibles tactiles, déplacement simultané de plusieurs étiquettes, pas de zoom ni de menu contextuel parasite sur le plateau.
 - Interface aux couleurs d'Apps1D76 (charte DSFR, police Marianne).
 - Paramètres d'affichage communs aux outils Apps1D76 : thème clair / sombre / système, taille du texte, animations, contraste renforcé.
 - Sauvegarde et ouverture au format `.etiq`.
@@ -39,34 +40,19 @@ Techniquement, c'est du JSON contenant :
 - les positions ;
 - les tailles ;
 - les colonnes ;
-- les réglages d'interface.
+- la position du menu.
 
 L'intérêt : un seul fichier peut être déplacé, copié ou partagé.
 
 ## Polices
 
-Polices proposées dans l’application :
+Une police installée sur l’ordinateur est toujours utilisée en priorité. Sinon, l’application utilise les fichiers du dossier `assets/fonts`. Sous la liste des polices, un message indique si la police choisie est disponible ; à défaut, Arial est utilisée.
 
-- Arial
-- Century Gothic
-- Marelle 2
-- Marelle Baton 2
-- OpenDyslexic
-- Comic Sans MS
-
-Les polices système utilisent celles disponibles sur l’ordinateur.
-
-Pour un rendu fiable sur une version web publiée, les polices pédagogiques peuvent être placées dans le dossier `assets/fonts` avec les noms suivants :
-
-- `Marelle2-Regular.ttf`
-- `MarelleBaton2-Regular.ttf`
-- `OpenDyslexic-Regular.otf`
-
-Si ces fichiers ne sont pas présents dans le projet, le navigateur peut utiliser les polices installées sur l’ordinateur. Si aucune police correspondante n’est disponible, une police de secours est utilisée automatiquement.
+**Marelle 2**, **Marelle Baton 2** et **OpenDyslexic** sont intégrées au projet (licence SIL OFL 1.1, voir `assets/fonts`) : elles fonctionnent partout, sans installation.
 
 ### Liens utiles
 
-Marelle 2 et Marelle Baton 2 :  
+Marelle 2 et Marelle Baton 2 (pour les installer aussi dans d’autres logiciels) :  
 https://marelle.forge.apps.education.fr/#telecharger
 
 OpenDyslexic :  
