@@ -1,22 +1,38 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000091">
   <meta name="description" content="Générateur d'étiquettes déplaçables pour activités de tri au tableau numérique.">
   <title>Générateur d'étiquettes déplaçables</title>
   <link rel="icon" type="image/png" href="assets/icon.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.3/dist/fonts/Marianne-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.3/dist/fonts/Marianne-Bold.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles/style.css">
+  <!-- Applique les préférences d'affichage (communes aux outils Apps1D76) avant le premier rendu -->
+  <script>
+  (function (d, p) {
+    try { p = JSON.parse(localStorage.getItem('apps1d-prefs')) || {}; } catch (e) { p = {}; }
+    var mq = function (q) { return window.matchMedia && matchMedia(q).matches; };
+    d.dataset.theme = p.theme === 'dark' || (p.theme !== 'light' && mq('(prefers-color-scheme: dark)')) ? 'dark' : 'light';
+    d.dataset.motion = p.motion === 'reduce' || (p.motion !== 'on' && mq('(prefers-reduced-motion: reduce)')) ? 'reduce' : 'full';
+    d.dataset.contrast = p.contrast ? 'high' : 'normal';
+    d.style.setProperty('--text-scale', ({ 115: 1.15, 130: 1.3 })[p.text] || 1);
+  })(document.documentElement);
+  </script>
 </head>
-<body class="theme-light menu-top">
+<body class="menu-top">
   <div id="app" class="app-shell">
     <aside id="menuPanel" class="menu-panel" aria-label="Menu principal">
+      <div class="tricolore" aria-hidden="true"></div>
       <header class="menu-header">
         <div class="brand">
           <img src="assets/icon.png" alt="" class="brand-icon">
           <div>
-            <h1>Générateur d'étiquettes déplaçables</h1>
-            <p>Création et manipulation d’étiquettes</p>
+            <h1>Générateur d'étiquettes</h1>
+            <p><b>Apps1D<span>76</span></b> · Mission Numérique Éducatif 76</p>
           </div>
         </div>
         <nav class="tabs" aria-label="Onglets">
@@ -26,20 +42,29 @@
           <button class="tab-button" data-tab="columns">Colonnes</button>
           <button class="tab-button" data-tab="help">Aide</button>
         </nav>
-        <button id="hideMenuBtn" class="icon-button menu-toggle-button" title="Agrandir/masquer le menu" aria-label="Agrandir/masquer le menu">
-          <span class="menu-toggle-icon" aria-hidden="true">☰</span>
-          <span class="menu-toggle-text">Agrandir / Masquer le menu</span>
-        </button>
+        <div class="actions">
+          <button type="button" class="icon-btn" id="themeToggle" aria-label="Activer le mode sombre">
+            <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+            <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="settingsBtn" aria-haspopup="dialog" aria-controls="settingsDialog">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+            <span class="btn-label">Affichage</span>
+          </button>
+          <button type="button" class="icon-btn" id="hideMenuBtn" aria-label="Masquer le menu" title="Masquer le menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
       </header>
 
       <section class="tab-panel active" id="tab-home">
         <div class="card">
           <h2>Activité</h2>
           <div class="button-grid compact">
-            <button id="newBtn" class="soft-button">Nouveau</button>
-            <button id="openBtn" class="soft-button">Ouvrir .etiq</button>
-            <button id="saveBtn" class="primary-button">Enregistrer</button>
-            <button id="saveAsBtn" class="soft-button">Enregistrer sous</button>
+            <button id="newBtn" class="btn btn-ghost">Nouveau</button>
+            <button id="openBtn" class="btn btn-ghost">Ouvrir .etiq</button>
+            <button id="saveBtn" class="btn">Enregistrer</button>
+            <button id="saveAsBtn" class="btn btn-ghost">Enregistrer sous</button>
           </div>
           <input type="file" id="openFileInput" accept=".etiq,application/json" hidden>
           <p class="hint">Le fichier <strong>.etiq</strong> conserve les étiquettes, les images, les colonnes et les réglages.</p>
@@ -48,9 +73,9 @@
         <div class="card">
           <h2>Actions rapides</h2>
           <div class="button-grid compact">
-            <button id="clearLabelsBtn" class="soft-button danger-soft">Vider les étiquettes</button>
-            <button id="clearColumnsBtn" class="soft-button">Vider les colonnes</button>
-            <button id="fullscreenBtn" class="soft-button">Plein écran</button>
+            <button id="clearLabelsBtn" class="btn btn-ghost btn-danger">Vider les étiquettes</button>
+            <button id="clearColumnsBtn" class="btn btn-ghost">Vider les colonnes</button>
+            <button id="fullscreenBtn" class="btn btn-ghost">Plein écran</button>
           </div>
         </div>
       </section>
@@ -62,10 +87,10 @@
           </div>
           <textarea id="textInput" class="text-input" placeholder="Zone de saisie des mots… Une phrase peut être découpée par mot. Une liste peut être découpée par ligne."></textarea>
           <div class="row wrap text-action-row">
-            <button id="loadTxtBtn" class="soft-button">Ajouter liste.txt</button>
+            <button id="loadTxtBtn" class="btn btn-ghost">Ajouter liste.txt</button>
             <input type="file" id="txtFileInput" accept=".txt,text/plain" hidden>
-            <button id="createTextLabelsBtn" class="primary-button primary-light">Générer les étiquettes</button>
-            <button id="createRandomTextLabelsBtn" class="primary-button dice-button"><span aria-hidden="true">🎲</span> Générer dans le désordre</button>
+            <button id="createTextLabelsBtn" class="btn">Générer les étiquettes</button>
+            <button id="createRandomTextLabelsBtn" class="btn btn-dice"><span aria-hidden="true">🎲</span> Générer dans le désordre</button>
           </div>
         </div>
 
@@ -124,7 +149,7 @@
       <section class="tab-panel" id="tab-images">
         <div class="card">
           <h2>Étiquettes image</h2>
-          <button id="addImagesBtn" class="primary-button wide">Ajouter image(s)</button>
+          <button id="addImagesBtn" class="btn wide">Ajouter image(s)</button>
           <input type="file" id="imageFileInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
           <p class="hint">La sélection de plusieurs images en une seule fois est possible. Chaque image devient une étiquette manipulable.</p>
         </div>
@@ -149,11 +174,11 @@
         <div class="card">
           <h2>Modèles rapides</h2>
           <div class="button-grid compact">
-            <button class="soft-button preset-columns" data-preset="2">2 colonnes</button>
-            <button class="soft-button preset-columns" data-preset="3">3 colonnes</button>
-            <button class="soft-button preset-columns" data-preset="4">4 colonnes</button>
-            <button class="soft-button preset-columns" data-preset="oui-non">Oui / Non</button>
-            <button class="soft-button preset-columns" data-preset="vrai-faux">Vrai / Faux</button>
+            <button class="btn btn-ghost preset-columns" data-preset="2">2 colonnes</button>
+            <button class="btn btn-ghost preset-columns" data-preset="3">3 colonnes</button>
+            <button class="btn btn-ghost preset-columns" data-preset="4">4 colonnes</button>
+            <button class="btn btn-ghost preset-columns" data-preset="oui-non">Oui / Non</button>
+            <button class="btn btn-ghost preset-columns" data-preset="vrai-faux">Vrai / Faux</button>
           </div>
         </div>
         <div class="card">
@@ -166,7 +191,7 @@
             <span>Couleur</span>
             <div class="palette" id="columnColorPalette"></div>
           </div>
-          <button id="addColumnBtn" class="primary-button wide">Ajouter la colonne</button>
+          <button id="addColumnBtn" class="btn wide">Ajouter la colonne</button>
         </div>
         <div class="card">
           <h2>Colonnes créées</h2>
@@ -179,8 +204,8 @@
           <h2>Aide rapide</h2>
 
           <p>
-            <strong>Paramètres :</strong> la roue crantée permet de personnaliser la position du ruban,
-            son style ou de réinitialiser l’outil.
+            <strong>Affichage :</strong> le bouton <strong>Affichage</strong> permet de choisir le thème,
+            la taille du texte, les animations, le contraste et la position du menu, ou de tout réinitialiser.
           </p>
 
           <p>
@@ -311,45 +336,64 @@
         <span class="trash-icon">🗑</span>
         <span>Corbeille</span>
       </div>
-      <button id="showMenuBtn" class="floating-menu-button" hidden title="Afficher le menu" aria-label="Afficher le menu">
-        <span class="menu-toggle-icon" aria-hidden="true">☰</span>
+      <button type="button" id="showMenuBtn" class="floating-menu-button" hidden title="Afficher le menu" aria-label="Afficher le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <span>Menu</span>
       </button>
-      <button id="settingsBtn" class="settings-button" title="Paramètres" aria-label="Paramètres">⚙</button>
     </main>
   </div>
 
-  <dialog id="settingsDialog" class="settings-dialog">
-    <form method="dialog" class="dialog-card">
-      <header class="dialog-header">
-        <h2>Paramètres</h2>
-        <button class="icon-button" value="close" aria-label="Fermer">×</button>
-      </header>
+  <dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsTitle">
+    <form method="dialog" class="settings">
+      <div class="settings-head">
+        <h2 id="settingsTitle">Paramètres d'affichage</h2>
+        <button type="submit" class="icon-btn" value="close" aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
 
-      <section>
-        <h3>Position du menu</h3>
-        <div class="choice-grid">
-          <button type="button" class="choice-button menu-pos" data-pos="top">Haut</button>
-          <button type="button" class="choice-button menu-pos" data-pos="bottom">Bas</button>
-          <button type="button" class="choice-button menu-pos" data-pos="left">Gauche</button>
-          <button type="button" class="choice-button menu-pos" data-pos="right">Droite</button>
+      <fieldset>
+        <legend>Thème</legend>
+        <div class="seg">
+          <label><input type="radio" name="theme" value="light"><span>Clair</span></label>
+          <label><input type="radio" name="theme" value="dark"><span>Sombre</span></label>
+          <label><input type="radio" name="theme" value="auto"><span>Système</span></label>
         </div>
-      </section>
+      </fieldset>
 
-      <section>
-        <h3>Apparence</h3>
-        <div class="choice-grid">
-          <button type="button" class="choice-button theme-choice" data-theme="light">Mode clair</button>
-          <button type="button" class="choice-button theme-choice" data-theme="dark">Mode sombre</button>
+      <fieldset>
+        <legend>Taille du texte</legend>
+        <div class="seg">
+          <label><input type="radio" name="text" value="100"><span>Normale</span></label>
+          <label><input type="radio" name="text" value="115"><span class="t115">Grande</span></label>
+          <label><input type="radio" name="text" value="130"><span class="t130">Très grande</span></label>
         </div>
-      </section>
+      </fieldset>
 
-      <section>
-        <h3>Affichage</h3>
-        <div class="button-grid compact">
-          <button type="button" id="settingsHideMenuBtn" class="soft-button">Masquer le menu</button>
-          <button type="button" id="resetUiBtn" class="soft-button">Réinitialiser l’interface</button>
+      <fieldset>
+        <legend>Animations</legend>
+        <div class="seg">
+          <label><input type="radio" name="motion" value="on"><span>Activées</span></label>
+          <label><input type="radio" name="motion" value="reduce"><span>Réduites</span></label>
+          <label><input type="radio" name="motion" value="auto"><span>Système</span></label>
         </div>
-      </section>
+      </fieldset>
+
+      <label class="switch"><input type="checkbox" name="contrast"><span>Contraste renforcé</span></label>
+
+      <fieldset>
+        <legend>Position du menu</legend>
+        <div class="seg">
+          <label><input type="radio" name="menuPosition" value="top"><span>Haut</span></label>
+          <label><input type="radio" name="menuPosition" value="bottom"><span>Bas</span></label>
+          <label><input type="radio" name="menuPosition" value="left"><span>Gauche</span></label>
+          <label><input type="radio" name="menuPosition" value="right"><span>Droite</span></label>
+        </div>
+      </fieldset>
+
+      <div class="settings-foot">
+        <button type="button" class="btn btn-ghost" id="settingsHideMenuBtn">Masquer le menu</button>
+        <button type="button" class="btn btn-ghost" id="resetUiBtn">Réinitialiser</button>
+        <button type="submit" class="btn" value="close">Fermer</button>
+      </div>
     </form>
   </dialog>
 

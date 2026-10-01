@@ -15,7 +15,8 @@ Application web statique pour créer et manipuler des étiquettes texte ou image
 - Colonnes personnalisées.
 - Menu affichable / masquable.
 - Position du menu : haut, bas, gauche, droite.
-- Mode clair / sombre.
+- Interface aux couleurs d'Apps1D76 (charte DSFR, police Marianne).
+- Paramètres d'affichage communs aux outils Apps1D76 : thème clair / sombre / système, taille du texte, animations, contraste renforcé.
 - Sauvegarde et ouverture au format `.etiq`.
 
 ## Polices disponibles dans l’application

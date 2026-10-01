@@ -2,6 +2,9 @@
   'use strict';
 
   const STORAGE_KEY = 'generateur-etiquettes-deplacables.autosave.v1';
+  // Préférences d'affichage communes à tous les outils Apps1D76.
+  const PREFS_KEY = 'apps1d-prefs';
+  const DEFAULT_PREFS = { theme: 'auto', text: '100', motion: 'auto', contrast: false };
   const PALETTE = [
     '#ffffff', '#f8fafc', '#e5e7eb', '#111827', '#ef4444', '#f97316',
     '#facc15', '#22c55e', '#38bdf8', '#2563eb', '#8b5cf6', '#ec4899'
@@ -21,7 +24,6 @@
     labels: [],
     columns: [],
     settings: {
-      theme: 'light',
       menuPosition: 'top',
       menuVisible: true
     },
@@ -35,11 +37,15 @@
     nextId: 1
   };
 
+  let prefs = loadPrefs();
+
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
   const els = {
     body: document.body,
+    root: document.documentElement,
+    themeToggle: $('#themeToggle'),
     menuPanel: $('#menuPanel'),
     workspace: $('#workspace'),
     columnsLayer: $('#columnsLayer'),
@@ -49,6 +55,7 @@
     hideMenuBtn: $('#hideMenuBtn'),
     settingsBtn: $('#settingsBtn'),
     settingsDialog: $('#settingsDialog'),
+    settingsForm: $('#settingsDialog form'),
     textInput: $('#textInput'),
     splitMode: $('#splitMode'),
     fontSelect: $('#fontSelect'),
@@ -74,6 +81,7 @@
     setupInlineTooltips();
     loadAutosave();
     if (els.splitMode) els.splitMode.value = 'word';
+    applyPrefs();
     applySettings();
     renderAll();
     updateFontSizeLabel();
@@ -116,19 +124,32 @@
     els.hideMenuBtn.addEventListener('click', () => setMenuVisible(false));
     els.showMenuBtn.addEventListener('click', () => setMenuVisible(true));
     $('#settingsHideMenuBtn').addEventListener('click', () => setMenuVisible(false));
-    els.settingsBtn.addEventListener('click', () => showDialog(els.settingsDialog));
+    $('#settingsHideMenuBtn').addEventListener('click', () => els.settingsDialog.close?.());
+    els.settingsBtn.addEventListener('click', () => {
+      syncSettingsForm();
+      showDialog(els.settingsDialog);
+    });
     $('#resetUiBtn').addEventListener('click', resetUiSettings);
+    els.themeToggle.addEventListener('click', () => {
+      setPrefs({ theme: els.root.dataset.theme === 'dark' ? 'light' : 'dark' });
+    });
 
-    $$('.menu-pos').forEach((btn) => btn.addEventListener('click', () => {
-      state.settings.menuPosition = btn.dataset.pos;
-      applySettings();
-      saveAutosave();
-    }));
-    $$('.theme-choice').forEach((btn) => btn.addEventListener('click', () => {
-      state.settings.theme = btn.dataset.theme;
-      applySettings();
-      saveAutosave();
-    }));
+    els.settingsForm.addEventListener('change', (event) => {
+      const { name, value, checked } = event.target;
+      if (name === 'menuPosition') {
+        state.settings.menuPosition = value;
+        applySettings();
+        saveAutosave();
+      } else if (name === 'contrast') {
+        setPrefs({ contrast: checked });
+      } else if (name in DEFAULT_PREFS) {
+        setPrefs({ [name]: value });
+      }
+    });
+
+    ['(prefers-color-scheme: dark)', '(prefers-reduced-motion: reduce)'].forEach((query) => {
+      window.matchMedia?.(query).addEventListener?.('change', applyPrefs);
+    });
 
     window.addEventListener('resize', debounce(() => {
       clampAllLabels();
@@ -352,7 +373,6 @@
     updatePaletteSelections();
     renderColumns();
     renderLabels();
-    updateSettingsButtons();
   }
 
   function renderLabels() {
@@ -630,26 +650,57 @@
   }
 
   function applySettings() {
-    els.body.classList.toggle('theme-dark', state.settings.theme === 'dark');
-    els.body.classList.toggle('theme-light', state.settings.theme !== 'dark');
     ['top', 'bottom', 'left', 'right'].forEach((pos) => els.body.classList.remove(`menu-${pos}`));
     els.body.classList.add(`menu-${state.settings.menuPosition || 'top'}`);
     els.body.classList.toggle('menu-hidden', !state.settings.menuVisible);
     els.showMenuBtn.hidden = state.settings.menuVisible;
-    updateSettingsButtons();
   }
 
-  function updateSettingsButtons() {
-    $$('.menu-pos').forEach((btn) => btn.classList.toggle('active', btn.dataset.pos === state.settings.menuPosition));
-    $$('.theme-choice').forEach((btn) => btn.classList.toggle('active', btn.dataset.theme === state.settings.theme));
+  function loadPrefs() {
+    try {
+      return { ...DEFAULT_PREFS, ...(JSON.parse(localStorage.getItem(PREFS_KEY)) || {}) };
+    } catch (error) {
+      return { ...DEFAULT_PREFS };
+    }
+  }
+
+  function setPrefs(changes) {
+    prefs = { ...prefs, ...changes };
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    } catch (error) {
+      // Préférences non conservées (navigation privée…) : elles restent actives pour la session.
+    }
+    applyPrefs();
+    syncSettingsForm();
+  }
+
+  function applyPrefs() {
+    const matches = (query) => Boolean(window.matchMedia?.(query).matches);
+    const dark = prefs.theme === 'dark' || (prefs.theme !== 'light' && matches('(prefers-color-scheme: dark)'));
+    const reduce = prefs.motion === 'reduce' || (prefs.motion !== 'on' && matches('(prefers-reduced-motion: reduce)'));
+    els.root.dataset.theme = dark ? 'dark' : 'light';
+    els.root.dataset.motion = reduce ? 'reduce' : 'full';
+    els.root.dataset.contrast = prefs.contrast ? 'high' : 'normal';
+    els.root.style.setProperty('--text-scale', ({ 115: 1.15, 130: 1.3 })[prefs.text] || 1);
+    els.themeToggle.setAttribute('aria-label', dark ? 'Activer le mode clair' : 'Activer le mode sombre');
+  }
+
+  function syncSettingsForm() {
+    const form = els.settingsForm.elements;
+    form.theme.value = prefs.theme;
+    form.text.value = String(prefs.text);
+    form.motion.value = prefs.motion;
+    form.contrast.checked = Boolean(prefs.contrast);
+    form.menuPosition.value = state.settings.menuPosition;
   }
 
   function resetUiSettings() {
-    state.settings.theme = 'light';
     state.settings.menuPosition = 'top';
     state.settings.menuVisible = true;
     applySettings();
     saveAutosave();
+    setPrefs(DEFAULT_PREFS);
   }
 
   function newActivity() {
@@ -713,7 +764,9 @@
       isObject(label) && Number.isFinite(label.x) && Number.isFinite(label.y) &&
       (label.type === 'image' ? typeof label.src === 'string' : typeof label.text === 'string'));
     state.columns = (Array.isArray(data.columns) ? data.columns : []).filter(isObject);
-    state.settings = { ...state.settings, ...(data.settings || {}) };
+    const settings = data.settings || {};
+    if (['top', 'bottom', 'left', 'right'].includes(settings.menuPosition)) state.settings.menuPosition = settings.menuPosition;
+    if (typeof settings.menuVisible === 'boolean') state.settings.menuVisible = settings.menuVisible;
     state.styles = { ...state.styles, ...(data.styles || {}) };
     state.nextId = Number(data.nextId) || state.labels.length + 1;
   }
