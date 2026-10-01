@@ -11,14 +11,19 @@
   ];
   const COLUMN_PALETTE = ['#dbeafe', '#dcfce7', '#fef3c7', '#fee2e2', '#ede9fe', '#fce7f3', '#e0f2fe', '#f1f5f9'];
 
-  const FONT_STACKS = {
-    'Arial': 'Arial, sans-serif',
-    'Century Gothic': '"Century Gothic", Arial, sans-serif',
-    'Marelle 2': '"Marelle 2", "Marelle2-Regular", Arial, sans-serif',
-    'Marelle Baton 2': '"Marelle Baton 2", "MarelleBaton2-Regular", Arial, sans-serif',
-    'OpenDyslexic': '"OpenDyslexic", "OpenDyslexic-Regular", Arial, sans-serif',
-    'Comic Sans MS': '"Comic Sans MS", Arial, sans-serif'
+  // Polices installées d'abord, puis les polices « Etiq … » du dossier assets/fonts (voir style.css).
+  const FONT_FAMILIES = {
+    'Arial': ['Arial'],
+    'Century Gothic': ['Century Gothic', 'CenturyGothic'],
+    'Marelle 2': ['Marelle 2', 'Marelle2', 'Marelle', 'Etiq Marelle 2'],
+    'Marelle Baton 2': ['Marelle Baton 2', 'MarelleBaton2', 'Marelle Baton', 'Etiq Marelle Baton 2'],
+    'OpenDyslexic': ['OpenDyslexic', 'OpenDyslexic3', 'Open Dyslexic', 'Etiq OpenDyslexic'],
+    'Comic Sans MS': ['Comic Sans MS', 'Comic Sans']
   };
+  const FONT_STACKS = Object.fromEntries(Object.entries(FONT_FAMILIES).map(([name, families]) => [
+    name,
+    `${families.map((family) => `"${family}"`).join(', ')}, Arial, sans-serif`
+  ]));
 
   const state = {
     labels: [],
@@ -60,6 +65,7 @@
     splitMode: $('#splitMode'),
     fontSelect: $('#fontSelect'),
     customFontInput: $('#customFontInput'),
+    fontStatus: $('#fontStatus'),
     fontSizeInput: $('#fontSizeInput'),
     fontSizeValue: $('#fontSizeValue'),
     boldInput: $('#boldInput'),
@@ -85,6 +91,7 @@
     applySettings();
     renderAll();
     updateFontSizeLabel();
+    updateFontStatus();
   }
 
   function bindEvents() {
@@ -95,6 +102,8 @@
     $('#loadTxtBtn').addEventListener('click', () => els.txtFileInput.click());
     els.txtFileInput.addEventListener('change', handleTxtFile);
     els.fontSizeInput.addEventListener('input', updateFontSizeLabel);
+    els.fontSelect.addEventListener('change', updateFontStatus);
+    els.customFontInput.addEventListener('input', debounce(updateFontStatus, 300));
 
     $('#addImagesBtn').addEventListener('click', () => els.imageFileInput.click());
     els.imageFileInput.addEventListener('change', handleImageFiles);
@@ -252,6 +261,35 @@
 
   function getChosenFont() {
     return els.customFontInput.value.trim() || els.fontSelect.value || 'Arial';
+  }
+
+  // Vérifie qu'au moins une des familles de la police choisie est réellement utilisable.
+  async function isFontAvailable(font) {
+    const families = FONT_FAMILIES[font] || [font.replace(/["']/g, '').trim()];
+    const ctx = document.createElement('canvas').getContext('2d');
+    const sample = 'mmmwwwiiilll Le chat dort 0123';
+    const width = (family) => {
+      ctx.font = `40px ${family}`;
+      return ctx.measureText(sample).width;
+    };
+    for (const family of families) {
+      await document.fonts.load(`40px "${family}"`).catch(() => {});
+      if (['monospace', 'serif'].some((generic) => width(`"${family}", ${generic}`) !== width(generic))) return true;
+    }
+    return false;
+  }
+
+  let fontStatusRequest = 0;
+
+  async function updateFontStatus() {
+    const font = getChosenFont();
+    const request = ++fontStatusRequest;
+    const available = await isFontAvailable(font);
+    if (request !== fontStatusRequest) return;
+    els.fontStatus.className = `font-status ${available ? 'ok' : 'missing'}`;
+    els.fontStatus.textContent = available
+      ? `✓ Police « ${font} » disponible`
+      : `Police « ${font} » introuvable : Arial sera utilisée. Voir l'onglet Aide pour l'installer.`;
   }
 
   function createTextLabels(shuffle = false) {

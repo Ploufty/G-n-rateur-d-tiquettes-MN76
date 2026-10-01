@@ -122,6 +122,7 @@
             Police personnalisée
             <input id="customFontInput" type="text" placeholder="Nom exact de la police installée">
           </label>
+          <p id="fontStatus" class="font-status" role="status" aria-live="polite"></p>
           <label class="field">
             Taille <span id="fontSizeValue">36 px</span>
             <input id="fontSizeInput" type="range" min="18" max="90" value="36">
@@ -259,15 +260,15 @@
               <ul>
                 <li>
                   <strong>Marelle 2</strong> : écriture cursive.<br>
-                  Nom exact du fichier attendu : <strong>Marelle2-Regular.ttf</strong>
+                  Nom exact du fichier attendu : <strong>Marelle2-Regular</strong> (.ttf, .otf ou .woff2)
                 </li>
                 <li>
                   <strong>Marelle Baton 2</strong> : cursive, majuscules en capitales.<br>
-                  Nom exact du fichier attendu : <strong>MarelleBaton2-Regular.ttf</strong>
+                  Nom exact du fichier attendu : <strong>MarelleBaton2-Regular</strong> (.ttf, .otf ou .woff2)
                 </li>
                 <li>
                   <strong>OpenDyslexic</strong> : police adaptée à certains besoins de lisibilité.<br>
-                  Nom exact du fichier attendu : <strong>OpenDyslexic-Regular.otf</strong>
+                  Déjà intégrée à l’application : aucune installation nécessaire.
                 </li>
               </ul>
 
@@ -280,10 +281,6 @@
                   <a href="https://marelle.forge.apps.education.fr/#telecharger" target="_blank" rel="noopener">
                     https://marelle.forge.apps.education.fr/#telecharger
                   </a><br>
-                  OpenDyslexic :
-                  <a href="https://opendyslexic.org/" target="_blank" rel="noopener">
-                    https://opendyslexic.org/
-                  </a>
                 </li>
 
                 <li>
@@ -296,7 +293,6 @@
                   <ul>
                     <li><strong>Marelle2-Regular.ttf</strong></li>
                     <li><strong>MarelleBaton2-Regular.ttf</strong></li>
-                    <li><strong>OpenDyslexic-Regular.otf</strong></li>
                   </ul>
                 </li>
 
@@ -320,8 +316,8 @@
               </ol>
 
               <p>
-                Si une police n’est pas présente dans le projet et n’est pas installée sur l’ordinateur,
-                le navigateur utilise automatiquement une police de secours.
+                Une police installée sur l’ordinateur est toujours utilisée en priorité. Sous la liste des polices,
+                un message indique si la police choisie est disponible ; sinon, Arial est utilisée.
               </p>
             </div>
           </details>

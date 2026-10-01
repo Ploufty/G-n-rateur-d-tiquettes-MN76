@@ -13,25 +13,39 @@
   font-display: swap;
 }
 
-/* Polices pédagogiques des étiquettes */
+/* Polices pédagogiques des étiquettes.
+   Noms « Etiq … » volontairement différents des polices installées : une police
+   installée sur l'ordinateur reste prioritaire (voir FONT_STACKS dans app.js), et ces
+   fichiers du dossier assets/fonts servent de secours. */
 @font-face {
-  font-family: "Marelle 2";
+  font-family: "Etiq Marelle 2";
   src: local("Marelle 2"), local("Marelle2-Regular"), local("Marelle 2 Regular"),
+       url("../assets/fonts/Marelle2-Regular.woff2") format("woff2"),
+       url("../assets/fonts/Marelle2-Regular.otf") format("opentype"),
        url("../assets/fonts/Marelle2-Regular.ttf") format("truetype");
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Marelle Baton 2";
+  font-family: "Etiq Marelle Baton 2";
   src: local("Marelle Baton 2"), local("MarelleBaton2-Regular"), local("Marelle Baton 2 Regular"),
+       url("../assets/fonts/MarelleBaton2-Regular.woff2") format("woff2"),
+       url("../assets/fonts/MarelleBaton2-Regular.otf") format("opentype"),
        url("../assets/fonts/MarelleBaton2-Regular.ttf") format("truetype");
   font-display: swap;
 }
 
 @font-face {
-  font-family: "OpenDyslexic";
-  src: local("OpenDyslexic"), local("OpenDyslexic-Regular"), local("OpenDyslexic Regular"),
-       url("../assets/fonts/OpenDyslexic-Regular.otf") format("opentype");
+  font-family: "Etiq OpenDyslexic";
+  src: url("../assets/fonts/OpenDyslexic-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Etiq OpenDyslexic";
+  src: url("../assets/fonts/OpenDyslexic-Bold.woff2") format("woff2");
+  font-weight: 700;
   font-display: swap;
 }
 
@@ -389,6 +403,16 @@ body.menu-right .tab-panel.active { grid-template-columns: 1fr; }
   accent-color: var(--blue);
 }
 
+.font-status {
+  margin: -2px 0 0;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.font-status.ok { color: #18753c; }
+.font-status.missing { color: var(--red); }
+[data-theme="dark"] .font-status.ok { color: #27a658; }
+
 .toggle-row {
   display: flex;
   flex-wrap: wrap;
@@ -407,6 +431,7 @@ body.menu-right .tab-panel.active { grid-template-columns: 1fr; }
   align-content: start;
 }
 #tab-text .settings-card .settings-heading,
+#tab-text .settings-card .font-status,
 #tab-text .settings-card .toggle-row { grid-column: 1 / -1; }
 #tab-text .settings-card .field,
 #tab-text .settings-card .palette-block { margin: 0; }
