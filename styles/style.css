@@ -28,7 +28,8 @@
 
 @font-face {
   font-family: "Etiq Marelle Baton 2";
-  src: local("Marelle Baton 2"), local("MarelleBaton2-Regular"), local("Marelle Baton 2 Regular"),
+  src: local("Marelle Bâton 2"), local("Marelle Bâton 2 Regular"),
+       local("Marelle Baton 2"), local("MarelleBaton2-Regular"), local("Marelle Baton 2 Regular"),
        url("../assets/fonts/MarelleBaton2-Regular.woff2") format("woff2"),
        url("../assets/fonts/MarelleBaton2-Regular.otf") format("opentype"),
        url("../assets/fonts/MarelleBaton2-Regular.ttf") format("truetype");

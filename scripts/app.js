@@ -16,7 +16,7 @@
     'Arial': ['Arial'],
     'Century Gothic': ['Century Gothic', 'CenturyGothic'],
     'Marelle 2': ['Marelle 2', 'Marelle2', 'Marelle', 'Etiq Marelle 2'],
-    'Marelle Baton 2': ['Marelle Baton 2', 'MarelleBaton2', 'Marelle Baton', 'Etiq Marelle Baton 2'],
+    'Marelle Baton 2': ['Marelle Bâton 2', 'Marelle Baton 2', 'MarelleBaton2', 'Etiq Marelle Baton 2'],
     'OpenDyslexic': ['OpenDyslexic', 'OpenDyslexic3', 'Open Dyslexic', 'Etiq OpenDyslexic'],
     'Comic Sans MS': ['Comic Sans MS', 'Comic Sans']
   };
