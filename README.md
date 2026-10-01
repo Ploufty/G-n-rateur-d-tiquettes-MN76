@@ -47,15 +47,14 @@ L'intérêt : un seul fichier peut être déplacé, copié ou partagé.
 
 Une police installée sur l’ordinateur est toujours utilisée en priorité. Sinon, l’application utilise les fichiers du dossier `assets/fonts`. Sous la liste des polices, un message indique si la police choisie est disponible ; à défaut, Arial est utilisée.
 
-- **OpenDyslexic** est intégrée au projet (licence SIL OFL 1.1) : elle fonctionne partout, sans installation.
-- **Marelle 2** et **Marelle Baton 2** doivent être installées sur l’ordinateur, ou déposées dans `assets/fonts` sous les noms `Marelle2-Regular` et `MarelleBaton2-Regular` (extension `.ttf`, `.otf` ou `.woff2`).
+**Marelle 2**, **Marelle Baton 2** et **OpenDyslexic** sont intégrées au projet (licence SIL OFL 1.1, voir `assets/fonts`) : elles fonctionnent partout, sans installation.
 
 ### Liens utiles
 
-Marelle 2 et Marelle Baton 2 :  
+Marelle 2 et Marelle Baton 2 (pour les installer aussi dans d’autres logiciels) :  
 https://marelle.forge.apps.education.fr/#telecharger
 
-OpenDyslexic (déjà incluse) :  
+OpenDyslexic :  
 https://opendyslexic.org/
 
 ## Aide à l’installation des polices sur Windows
