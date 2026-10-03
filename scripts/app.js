@@ -117,7 +117,7 @@
     $$('.preset-columns').forEach((btn) => btn.addEventListener('click', () => applyColumnPreset(btn.dataset.preset)));
     $('#addColumnBtn').addEventListener('click', addCustomColumn);
     $('#clearColumnsBtn').addEventListener('click', () => {
-      if (!window.confirm('Supprimer toutes les colonnes ?')) return;
+      if (!state.columns.length || !window.confirm('Supprimer toutes les colonnes ?')) return;
       state.columns = [];
       renderColumns();
       saveAutosave();
@@ -129,15 +129,17 @@
     $('#saveBtn').addEventListener('click', () => saveActivity(state.currentFileName || 'activite-etiquettes.etiq'));
     $('#saveAsBtn').addEventListener('click', () => {
       els.saveAsName.value = state.currentFileName.replace(/\.etiq$/, '');
+      els.saveAsDialog.returnValue = '';
       showDialog(els.saveAsDialog);
       els.saveAsName.select();
     });
+    $$('[data-close-dialog]').forEach((btn) => btn.addEventListener('click', () => btn.closest('dialog').close('cancel')));
     els.saveAsDialog.addEventListener('close', () => {
       if (els.saveAsDialog.returnValue !== 'save') return;
       saveActivity(els.saveAsName.value.trim().replace(/[\\/:*?"<>|]/g, '-') || 'activite-etiquettes');
     });
     $('#clearLabelsBtn').addEventListener('click', () => {
-      if (!window.confirm('Supprimer toutes les étiquettes ?')) return;
+      if (!state.labels.length || !window.confirm('Supprimer toutes les étiquettes ?')) return;
       state.labels = [];
       renderLabels();
       saveAutosave();
@@ -182,7 +184,7 @@
     }, 150));
 
     document.addEventListener('keydown', (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !document.querySelector('dialog[open]')) {
         createTextLabels(false);
       }
     });
@@ -257,7 +259,11 @@
   }
 
   function openTab(name) {
-    $$('.tab-button').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === name));
+    $$('.tab-button').forEach((btn) => {
+      const active = btn.dataset.tab === name;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', String(active));
+    });
     $$('.tab-panel').forEach((panel) => panel.classList.toggle('active', panel.id === `tab-${name}`));
   }
 
@@ -282,6 +288,7 @@
       btn.className = 'swatch';
       btn.style.backgroundColor = color;
       btn.title = color;
+      btn.setAttribute('aria-label', `Couleur ${color}`);
       btn.dataset.color = color;
       btn.addEventListener('click', () => {
         state.styles[key] = color;
@@ -297,7 +304,9 @@
       const palette = document.querySelector(`[data-target="${key}"] .palette`);
       if (!palette) return;
       palette.querySelectorAll('.swatch').forEach((swatch) => {
-        swatch.classList.toggle('selected', swatch.dataset.color === state.styles[key]);
+        const selected = swatch.dataset.color === state.styles[key];
+        swatch.classList.toggle('selected', selected);
+        swatch.setAttribute('aria-pressed', String(selected));
       });
     });
   }
@@ -342,7 +351,12 @@
   function createTextLabels(shuffle = false) {
     const raw = els.textInput.value;
     const parts = splitText(raw, getSplitMode());
-    if (!parts.length) return;
+    if (!parts.length) {
+      if (!state.settings.menuVisible) setMenuVisible(true);
+      openTab('text');
+      els.textInput.focus();
+      return;
+    }
 
     const labelsToCreate = shuffle ? shuffleArray(parts) : parts;
 
@@ -721,12 +735,16 @@
       name.textContent = column.title;
       item.append(dot, name);
       const editBtn = document.createElement('button');
+      editBtn.type = 'button';
       editBtn.className = 'mini-button';
       editBtn.textContent = 'Modifier';
+      editBtn.setAttribute('aria-label', `Modifier la colonne ${column.title}`);
       editBtn.addEventListener('click', () => editColumn(index));
       const delBtn = document.createElement('button');
+      delBtn.type = 'button';
       delBtn.className = 'mini-button';
       delBtn.textContent = 'Supprimer';
+      delBtn.setAttribute('aria-label', `Supprimer la colonne ${column.title}`);
       delBtn.addEventListener('click', () => {
         state.columns.splice(index, 1);
         renderColumns();
@@ -799,7 +817,9 @@
     els.root.dataset.motion = reduce ? 'reduce' : 'full';
     els.root.dataset.contrast = prefs.contrast ? 'high' : 'normal';
     els.root.style.setProperty('--text-scale', ({ 115: 1.15, 130: 1.3 })[prefs.text] || 1);
-    els.themeToggle.setAttribute('aria-label', dark ? 'Activer le mode clair' : 'Activer le mode sombre');
+    const themeLabel = dark ? 'Activer le mode clair' : 'Activer le mode sombre';
+    els.themeToggle.setAttribute('aria-label', themeLabel);
+    els.themeToggle.title = themeLabel;
   }
 
   function syncSettingsForm() {

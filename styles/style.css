@@ -273,7 +273,13 @@ body.menu-bottom .menu-panel { border-bottom: 0; }
   border-radius: 999px;
   transition: border-color .25s, background-color .25s, transform .25s var(--spring);
 }
-.icon-btn:hover { border-color: var(--blue); transform: translateY(-2px); }
+/* Effet de survol réservé à la souris : au doigt ou au stylet (TNI), le bouton ne reste pas « soulevé » */
+@media (hover: hover) {
+  .icon-btn:hover { transform: translateY(-2px); }
+  .btn:hover { transform: translateY(-2px); }
+  .swatch:hover { transform: scale(1.12); }
+}
+.icon-btn:hover { border-color: var(--blue); }
 .icon-btn:active { transform: scale(.94); }
 .icon-btn[hidden] { display: none; }
 .icon-btn.active { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
@@ -532,7 +538,6 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
   border-radius: 999px;
   transition: transform .25s var(--spring), background-color .25s, border-color .25s;
 }
-.btn:hover { transform: translateY(-2px); }
 .btn:active { transform: scale(.96); }
 .btn-ghost {
   background: transparent;
@@ -551,7 +556,7 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
 .clear-columns { margin-top: 8px; }
 
 .mini-button {
-  min-height: 2.25rem;
+  min-height: 2.75rem;
   padding: .3rem .8rem;
   font-size: .8rem;
   font-weight: 700;
@@ -592,7 +597,6 @@ body.menu-right #tab-text .settings-card { grid-template-columns: 1fr; }
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45);
   transition: transform .25s var(--spring);
 }
-.swatch:hover { transform: scale(1.12); }
 .swatch.selected {
   outline: 3px solid var(--blue);
   outline-offset: 2px;
