@@ -36,11 +36,11 @@
           </div>
         </div>
         <nav class="tabs" aria-label="Onglets">
-          <button class="tab-button active" data-tab="home">Activité</button>
-          <button class="tab-button" data-tab="text">Texte</button>
-          <button class="tab-button" data-tab="images">Images</button>
-          <button class="tab-button" data-tab="columns">Colonnes</button>
-          <button class="tab-button" data-tab="help">Aide</button>
+          <button type="button" class="tab-button active" data-tab="home" aria-pressed="true">Activité</button>
+          <button type="button" class="tab-button" data-tab="text" aria-pressed="false">Texte</button>
+          <button type="button" class="tab-button" data-tab="images" aria-pressed="false">Images</button>
+          <button type="button" class="tab-button" data-tab="columns" aria-pressed="false">Colonnes</button>
+          <button type="button" class="tab-button" data-tab="help" aria-pressed="false">Aide</button>
         </nav>
         <div class="actions">
           <button type="button" class="icon-btn" id="fullscreenBtn" aria-label="Plein écran" title="Plein écran">
@@ -48,11 +48,11 @@
             <svg class="i-compress" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
             <span class="btn-label">Plein écran</span>
           </button>
-          <button type="button" class="icon-btn" id="themeToggle" aria-label="Activer le mode sombre">
+          <button type="button" class="icon-btn" id="themeToggle" aria-label="Activer le mode sombre" title="Activer le mode sombre">
             <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
             <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg>
           </button>
-          <button type="button" class="icon-btn" id="settingsBtn" aria-haspopup="dialog" aria-controls="settingsDialog">
+          <button type="button" class="icon-btn" id="settingsBtn" aria-haspopup="dialog" aria-controls="settingsDialog" aria-label="Paramètres d'affichage" title="Paramètres d'affichage">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
             <span class="btn-label">Affichage</span>
           </button>
@@ -63,10 +63,10 @@
         <div class="card">
           <h2>Activité</h2>
           <div class="button-grid compact">
-            <button id="newBtn" class="btn btn-ghost">Nouveau</button>
-            <button id="openBtn" class="btn btn-ghost">Ouvrir .etiq</button>
-            <button id="saveBtn" class="btn">Enregistrer</button>
-            <button id="saveAsBtn" class="btn btn-ghost">Enregistrer sous…</button>
+            <button type="button" id="newBtn" class="btn btn-ghost">Nouveau</button>
+            <button type="button" id="openBtn" class="btn btn-ghost">Ouvrir .etiq</button>
+            <button type="button" id="saveBtn" class="btn">Enregistrer</button>
+            <button type="button" id="saveAsBtn" class="btn btn-ghost">Enregistrer sous…</button>
           </div>
           <input type="file" id="openFileInput" accept=".etiq,application/json" hidden>
           <p class="hint">Le fichier <strong>.etiq</strong> conserve les étiquettes, les images, les colonnes et les réglages.</p>
@@ -74,7 +74,7 @@
 
         <div class="card">
           <h2>Plateau</h2>
-          <button id="clearLabelsBtn" class="btn btn-ghost btn-danger wide">Supprimer toutes les étiquettes</button>
+          <button type="button" id="clearLabelsBtn" class="btn btn-ghost btn-danger wide">Supprimer toutes les étiquettes</button>
           <p class="hint">Pour supprimer une seule étiquette, la glisser dans la corbeille. Les colonnes se gèrent dans l’onglet <strong>Colonnes</strong>.</p>
         </div>
       </section>
@@ -84,10 +84,10 @@
           <h2 class="sr-only">Étiquettes texte</h2>
           <textarea id="textInput" class="text-input" aria-label="Mots des étiquettes" placeholder="Zone de saisie des mots… Une phrase peut être découpée par mot. Une liste peut être découpée par ligne."></textarea>
           <div class="row wrap text-action-row">
-            <button id="loadTxtBtn" class="btn btn-ghost">Ajouter liste.txt</button>
+            <button type="button" id="loadTxtBtn" class="btn btn-ghost">Ajouter liste.txt</button>
             <input type="file" id="txtFileInput" accept=".txt,text/plain" hidden>
-            <button id="createTextLabelsBtn" class="btn">Générer les étiquettes</button>
-            <button id="createRandomTextLabelsBtn" class="btn btn-dice"><span aria-hidden="true">🎲</span> Générer dans le désordre</button>
+            <button type="button" id="createTextLabelsBtn" class="btn">Générer les étiquettes</button>
+            <button type="button" id="createRandomTextLabelsBtn" class="btn btn-dice"><span aria-hidden="true">🎲</span> Générer dans le désordre</button>
           </div>
         </div>
 
@@ -149,7 +149,7 @@
       <section class="tab-panel" id="tab-images">
         <div class="card">
           <h2>Étiquettes image</h2>
-          <button id="addImagesBtn" class="btn wide">Ajouter image(s)</button>
+          <button type="button" id="addImagesBtn" class="btn wide">Ajouter image(s)</button>
           <input type="file" id="imageFileInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
           <p class="hint">La sélection de plusieurs images en une seule fois est possible. Chaque image devient une étiquette manipulable, redimensionnable avec la poignée ronde en bas à droite.</p>
         </div>
@@ -175,11 +175,11 @@
         <div class="card">
           <h2>Modèles rapides</h2>
           <div class="button-grid compact">
-            <button class="btn btn-ghost preset-columns" data-preset="2">2 colonnes</button>
-            <button class="btn btn-ghost preset-columns" data-preset="3">3 colonnes</button>
-            <button class="btn btn-ghost preset-columns" data-preset="4">4 colonnes</button>
-            <button class="btn btn-ghost preset-columns" data-preset="oui-non">Oui / Non</button>
-            <button class="btn btn-ghost preset-columns" data-preset="vrai-faux">Vrai / Faux</button>
+            <button type="button" class="btn btn-ghost preset-columns" data-preset="2">2 colonnes</button>
+            <button type="button" class="btn btn-ghost preset-columns" data-preset="3">3 colonnes</button>
+            <button type="button" class="btn btn-ghost preset-columns" data-preset="4">4 colonnes</button>
+            <button type="button" class="btn btn-ghost preset-columns" data-preset="oui-non">Oui / Non</button>
+            <button type="button" class="btn btn-ghost preset-columns" data-preset="vrai-faux">Vrai / Faux</button>
           </div>
         </div>
         <div class="card">
@@ -192,12 +192,12 @@
             <span>Couleur</span>
             <div class="palette" id="columnColorPalette"></div>
           </div>
-          <button id="addColumnBtn" class="btn wide">Ajouter la colonne</button>
+          <button type="button" id="addColumnBtn" class="btn wide">Ajouter la colonne</button>
         </div>
         <div class="card">
           <h2>Colonnes créées</h2>
           <div id="columnList" class="column-list empty">Aucune colonne pour le moment.</div>
-          <button id="clearColumnsBtn" class="btn btn-ghost btn-danger wide clear-columns">Supprimer toutes les colonnes</button>
+          <button type="button" id="clearColumnsBtn" class="btn btn-ghost btn-danger wide clear-columns">Supprimer toutes les colonnes</button>
         </div>
       </section>
 
@@ -297,14 +297,14 @@
     <form method="dialog" class="settings">
       <div class="settings-head">
         <h2 id="saveAsTitle">Enregistrer sous</h2>
-        <button type="submit" class="icon-btn" value="cancel" formnovalidate aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <button type="button" class="icon-btn" data-close-dialog aria-label="Fermer" title="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
       <label class="field">
         Nom du fichier
         <span class="file-name-row"><input id="saveAsName" type="text" required autocomplete="off"><span>.etiq</span></span>
       </label>
       <div class="settings-foot">
-        <button type="submit" class="btn btn-ghost" value="cancel" formnovalidate>Annuler</button>
+        <button type="button" class="btn btn-ghost" data-close-dialog>Annuler</button>
         <button type="submit" class="btn" value="save">Enregistrer</button>
       </div>
     </form>
@@ -314,7 +314,7 @@
     <form method="dialog" class="settings">
       <div class="settings-head">
         <h2 id="settingsTitle">Paramètres d'affichage</h2>
-        <button type="submit" class="icon-btn" value="close" aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <button type="submit" class="icon-btn" value="close" aria-label="Fermer" title="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
 
       <fieldset>
