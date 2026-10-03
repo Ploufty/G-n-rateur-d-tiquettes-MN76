@@ -81,10 +81,8 @@
 
       <section class="tab-panel" id="tab-text">
         <div class="card grow-card">
-          <div class="card-title-line">
-            <h2>Étiquettes texte</h2>
-          </div>
-          <textarea id="textInput" class="text-input" placeholder="Zone de saisie des mots… Une phrase peut être découpée par mot. Une liste peut être découpée par ligne."></textarea>
+          <h2 class="sr-only">Étiquettes texte</h2>
+          <textarea id="textInput" class="text-input" aria-label="Mots des étiquettes" placeholder="Zone de saisie des mots… Une phrase peut être découpée par mot. Une liste peut être découpée par ligne."></textarea>
           <div class="row wrap text-action-row">
             <button id="loadTxtBtn" class="btn btn-ghost">Ajouter liste.txt</button>
             <input type="file" id="txtFileInput" accept=".txt,text/plain" hidden>
@@ -121,16 +119,17 @@
             Police personnalisée
             <input id="customFontInput" type="text" placeholder="Nom exact de la police installée">
           </label>
-          <p id="fontStatus" class="font-status" role="status" aria-live="polite"></p>
           <label class="field">
-            Taille <span id="fontSizeValue">36 px</span>
+            <span>Taille : <span id="fontSizeValue">36 px</span></span>
             <input id="fontSizeInput" type="range" min="18" max="90" value="36">
           </label>
+          <p id="fontStatus" class="font-status" role="status" aria-live="polite"></p>
           <div class="toggle-row">
             <label><input id="boldInput" type="checkbox"> Gras</label>
             <label><input id="underlineInput" type="checkbox"> Souligné</label>
             <label><input id="roundedInput" type="checkbox" checked> Coins arrondis</label>
           </div>
+          <div class="palette-row">
           <div class="palette-block" data-target="textColor">
             <span>Texte</span>
             <div class="palette" id="textColorPalette"></div>
@@ -142,6 +141,7 @@
           <div class="palette-block" data-target="borderColor">
             <span>Bordure</span>
             <div class="palette" id="borderColorPalette"></div>
+          </div>
           </div>
         </div>
       </section>
