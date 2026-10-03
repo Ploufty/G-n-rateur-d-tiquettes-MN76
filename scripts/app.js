@@ -65,7 +65,7 @@
     saveAsDialog: $('#saveAsDialog'),
     saveAsName: $('#saveAsName'),
     textInput: $('#textInput'),
-    splitMode: $('#splitMode'),
+    splitPreview: $('#splitPreview'),
     fontSelect: $('#fontSelect'),
     customFontInput: $('#customFontInput'),
     fontStatus: $('#fontStatus'),
@@ -90,12 +90,12 @@
     setupInlineTooltips();
     setupReliableTaps();
     loadAutosave();
-    if (els.splitMode) els.splitMode.value = 'word';
     applyPrefs();
     applySettings();
     renderAll();
     updateFontSizeLabel();
     updateFontStatus();
+    updateSplitPreview();
   }
 
   function bindEvents() {
@@ -106,6 +106,8 @@
     $('#loadTxtBtn').addEventListener('click', () => els.txtFileInput.click());
     els.txtFileInput.addEventListener('change', handleTxtFile);
     els.fontSizeInput.addEventListener('input', updateFontSizeLabel);
+    els.textInput.addEventListener('input', updateSplitPreview);
+    $$('input[name="splitMode"]').forEach((input) => input.addEventListener('change', updateSplitPreview));
     els.fontSelect.addEventListener('change', updateFontStatus);
     els.customFontInput.addEventListener('input', debounce(updateFontStatus, 300));
 
@@ -339,7 +341,7 @@
 
   function createTextLabels(shuffle = false) {
     const raw = els.textInput.value;
-    const parts = splitText(raw, els.splitMode.value);
+    const parts = splitText(raw, getSplitMode());
     if (!parts.length) return;
 
     const labelsToCreate = shuffle ? shuffleArray(parts) : parts;
@@ -369,6 +371,7 @@
     });
 
     els.textInput.value = '';
+    updateSplitPreview();
     renderLabels();
     saveAutosave();
   }
@@ -382,11 +385,29 @@
     return output;
   }
 
+  function getSplitMode() {
+    return $('input[name="splitMode"]:checked')?.value || 'list';
+  }
+
+  // Annonce combien d'étiquettes seront créées, pour repérer un mauvais découpage avant de générer.
+  function updateSplitPreview() {
+    const parts = splitText(els.textInput.value, getSplitMode());
+    if (!parts.length) {
+      els.splitPreview.textContent = '';
+      return;
+    }
+    const shown = parts.slice(0, 4).map((part) => `« ${part} »`).join(', ');
+    const more = parts.length > 4 ? '…' : '';
+    els.splitPreview.textContent = `${parts.length} étiquette${parts.length > 1 ? 's' : ''} : ${shown}${more}`;
+  }
+
   function splitText(raw, mode) {
     if (!raw || !raw.trim()) return [];
     if (mode === 'word') return raw.trim().split(/\s+/).filter(Boolean);
     if (mode === 'letter') return Array.from(raw.replace(/\s/g, '')).filter(Boolean);
-    return raw.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    // Une virgule entre deux chiffres (1,5) est décimale : elle ne coupe pas l'étiquette.
+    const separators = mode === 'line' ? /\r?\n/ : /[\r\n;]|(?<!\d),|,(?!\d)/;
+    return raw.split(separators).map((part) => part.trim()).filter(Boolean);
   }
 
   function nextPlacement(index = 0) {
@@ -407,6 +428,7 @@
     if (!file) return;
     const text = await file.text();
     els.textInput.value = text;
+    updateSplitPreview();
     event.target.value = '';
   }
 

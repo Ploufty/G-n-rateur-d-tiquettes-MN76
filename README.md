@@ -7,7 +7,7 @@ Application web statique pour créer et manipuler des étiquettes texte ou image
 - Création d'étiquettes texte.
 - Génération des étiquettes texte dans l'ordre ou dans le désordre.
 - Import d'une liste `.txt`.
-- Découpage par mot, par ligne ou par lettre.
+- Découpage par virgule ou ligne (par défaut : « petit chien » reste une seule étiquette), par ligne, par mot ou par lettre.
 - Ajout de plusieurs images d'un coup.
 - Déplacement souris / tactile / stylet.
 - Suppression par glisser-déposer dans la corbeille.
