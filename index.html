@@ -82,7 +82,17 @@
       <section class="tab-panel" id="tab-text">
         <div class="card grow-card">
           <h2 class="sr-only">Étiquettes texte</h2>
-          <textarea id="textInput" class="text-input" aria-label="Mots des étiquettes" placeholder="Zone de saisie des mots… Une phrase peut être découpée par mot. Une liste peut être découpée par ligne."></textarea>
+          <textarea id="textInput" class="text-input" aria-label="Mots des étiquettes" placeholder="Une étiquette par ligne ou entre virgules : chat, petit chien, Texte 2…"></textarea>
+          <fieldset class="split-field">
+            <legend>Une étiquette pour chaque :</legend>
+            <div class="seg" id="splitMode">
+              <label><input type="radio" name="splitMode" value="list" checked><span>Virgule ou ligne</span></label>
+              <label><input type="radio" name="splitMode" value="line"><span>Ligne</span></label>
+              <label><input type="radio" name="splitMode" value="word"><span>Mot</span></label>
+              <label><input type="radio" name="splitMode" value="letter"><span>Lettre</span></label>
+            </div>
+          </fieldset>
+          <p id="splitPreview" class="split-preview" aria-live="polite"></p>
           <div class="row wrap text-action-row">
             <button id="loadTxtBtn" class="btn btn-ghost">Ajouter liste.txt</button>
             <input type="file" id="txtFileInput" accept=".txt,text/plain" hidden>
@@ -96,14 +106,6 @@
             <h2>Réglages du texte</h2>
             <button type="button" id="fontInfoBtn" class="inline-help settings-help-corner" aria-label="Information sur les polices" data-tooltip="Si la police n’est pas installée sur l’ordinateur, le navigateur utilisera automatiquement une police de secours. Plus d’information pour l’installation des polices utilisées dans l’onglet AIDE.">?</button>
           </div>
-          <label class="field">
-            Découpage
-            <select id="splitMode">
-              <option value="word" selected>Par mot</option>
-              <option value="line">Par ligne</option>
-              <option value="letter">Par lettre</option>
-            </select>
-          </label>
           <label class="field">
             Police recommandée
             <select id="fontSelect">
@@ -223,7 +225,10 @@
 
           <p>
             <strong>Onglet Texte :</strong> les mots saisis (ou importés depuis un fichier .txt) deviennent des
-            étiquettes avec <strong>Générer les étiquettes</strong>, dans l’ordre ou dans le désordre. Découpage, police,
+            étiquettes avec <strong>Générer les étiquettes</strong>, dans l’ordre ou dans le désordre. Par défaut, une étiquette
+            se termine à chaque virgule, point-virgule ou retour à la ligne (« petit chien » reste une seule étiquette,
+            et une virgule entre deux chiffres, comme dans 1,5, ne coupe pas) ;
+            le découpage peut aussi se faire par ligne seulement, par mot ou par lettre. Découpage, police,
             taille, style et couleurs se règlent à droite.
           </p>
 
