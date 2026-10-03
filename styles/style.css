@@ -75,7 +75,7 @@
   --text-scale: 1;
   /* Menu haut / bas : hauteur ajustée au contenu de l'onglet, sans dépasser ce plafond */
   --menu-max-h: min(46vh, 30rem);
-  --menu-size-vertical: clamp(300px, 24vw, 400px);
+  --menu-size-vertical: clamp(300px, 24vw, 25rem);
   color-scheme: light;
 }
 
@@ -373,7 +373,7 @@ body.menu-right .tab-panel.active { grid-template-columns: 1fr; }
 .text-input {
   display: block;
   width: 100%;
-  min-height: 84px;
+  min-height: 4rem;
   max-height: 160px;
   margin-bottom: 6px;
   padding: .55rem .75rem;
@@ -384,8 +384,22 @@ body.menu-right .tab-panel.active { grid-template-columns: 1fr; }
   user-select: text;
   transition: border-color .25s, box-shadow .25s;
 }
+.split-field { margin: 0 0 4px; padding: 0; border: 0; min-width: 0; }
+.split-field legend { margin-bottom: 4px; padding: 0; color: var(--muted); font-size: .78rem; font-weight: 700; }
+.split-field .seg { background: var(--panel); }
+.split-field .seg span { min-height: 2.5rem; font-size: .82rem; }
+.split-preview {
+  min-height: 1.2em;
+  margin-bottom: 4px;
+  overflow: hidden;
+  color: var(--blue);
+  font-size: .78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .text-action-row { align-items: stretch; }
-.text-action-row > button { flex: 1 1 130px; }
+.text-action-row > button { flex: 1 1 110px; min-height: 2.5rem; padding-inline: .8rem; }
 
 .field {
   display: grid;
@@ -446,7 +460,7 @@ body.menu-right .tab-panel.active { grid-template-columns: 1fr; }
 .settings-card { position: relative; }
 #tab-text .settings-card {
   display: grid;
-  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  grid-template-columns: repeat(3, minmax(110px, 1fr));
   gap: 4px 10px;
   align-content: start;
 }
